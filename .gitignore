@@ -1,0 +1,12 @@
+# Environment variables (secrets)
+.env
+.env.*
+!.env.example
+
+# Flutter / Dart
+.dart_tool/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
