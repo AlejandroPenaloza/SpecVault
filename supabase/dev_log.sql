@@ -135,3 +135,12 @@ CHECK (diameter IS NULL OR diameter > 0);
 -- in 'items'
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
+
+-- change of type from timestamp to timestamptz
+ALTER TABLE items
+  ALTER COLUMN created_at TYPE timestamptz
+  USING created_at AT TIME ZONE 'UTC';
+
+ALTER TABLE items
+  ALTER COLUMN updated_at TYPE timestamptz
+  USING updated_at AT TIME ZONE 'UTC';
