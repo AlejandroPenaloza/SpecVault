@@ -144,3 +144,21 @@ ALTER TABLE items
 ALTER TABLE items
   ALTER COLUMN updated_at TYPE timestamptz
   USING updated_at AT TIME ZONE 'UTC';
+
+-- decided to move feature 'obtained_from' from 'coins' to base table 'items' 
+-- since it is likely a feature for all subcollection (all items).
+-- create column 'obtained_from' in 'items'
+ALTER TABLE items
+ADD COLUMN obtained_from text;
+
+-- migrate existing data in coin's obtained from to item's
+UPDATE items i
+SET obtained_from = c.obtained_from
+FROM coinc c
+WHERE c.item_id = i.id
+  AND c.obtained_from IS NOT NULL
+  AND i.obtained_from IS NULL;
+
+-- eliminate column 'obtained_from' in 'coins'
+ALTER TABLE coins
+DROP COLUMN obtained_from;
