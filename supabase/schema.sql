@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/02
+  Updated: 2026/01/08
 */
 
 
@@ -98,3 +98,19 @@ ALTER TABLE items
 ALTER TABLE items
   ALTER COLUMN updated_at TYPE timestamptz
   USING updated_at AT TIME ZONE 'UTC';
+
+-- create column 'obtained_from' in 'items'
+ALTER TABLE items
+ADD COLUMN obtained_from text;
+
+-- migrate existing data in coin's obtained from to item's
+UPDATE items i
+SET obtained_from = c.obtained_from
+FROM coinc c
+WHERE c.item_id = i.id
+  AND c.obtained_from IS NOT NULL
+  AND i.obtained_from IS NULL;
+
+-- eliminate column 'obtained_from' in 'coins'
+ALTER TABLE coins
+DROP COLUMN obtained_from;
