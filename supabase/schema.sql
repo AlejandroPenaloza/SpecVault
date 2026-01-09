@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/08
+  Updated: 2026/01/09
 */
 
 
@@ -18,29 +18,16 @@ create extension if not exists "uuid-ossp";
 create table items (
   id uuid primary key default uuid_generate_v4(),
   name text not null,
-  category text not null,
   description text,
   acquired_date date,
-  created_at timestamp default now(),
-  updated_at timestamp default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  subcollection text,
+  theme text, 
+  acquisition_cost numeric(10,2), 
+  acquisition_currency char(3) DEFAULT 'USD', 
+  obtained_from text
 );
-
--- Replace column 'category' with column 'subcollection' 
--- and 'theme' in 'items'
-ALTER TABLE items
-ADD COLUMN subcollection text,
-ADD COLUMN theme text;
-
-ALTER TABLE items
-DROP COLUMN category;
-
--- Add 'acquisition cost' (exact monetary value)
-ALTER TABLE items
-ADD COLUMN acquisition_cost numeric(10,2);
-
--- Add 'acquisition currency' (ISO-4217, default USD)
-ALTER TABLE items
-ADD COLUMN acquisition_currency char(3) DEFAULT 'USD';
 
 -- Enforce non-negative acquisition cost
 ALTER TABLE items
@@ -71,7 +58,6 @@ CREATE TABLE coins (
   mark text,                            -- Special marks or privy marks
   prog_theme text,                      -- Program/theme (e.g. State Quarters)
   condition text,                       -- Grade or condition
-  obtained_from text,                   -- Source (dealer, gift, etc.)
   mintage bigint CHECK (mintage >= 0),  -- Number minted
   notes text                            -- Free-form notes
 );
@@ -89,28 +75,3 @@ CHECK (diameter IS NULL OR diameter > 0);
 -- index of subcollection in items
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
-
--- change of data type from timestamp to timestamptz in created_at, updated_at
-ALTER TABLE items
-  ALTER COLUMN created_at TYPE timestamptz
-  USING created_at AT TIME ZONE 'UTC';
-
-ALTER TABLE items
-  ALTER COLUMN updated_at TYPE timestamptz
-  USING updated_at AT TIME ZONE 'UTC';
-
--- create column 'obtained_from' in 'items'
-ALTER TABLE items
-ADD COLUMN obtained_from text;
-
--- migrate existing data in coin's obtained from to item's
-UPDATE items i
-SET obtained_from = c.obtained_from
-FROM coinc c
-WHERE c.item_id = i.id
-  AND c.obtained_from IS NOT NULL
-  AND i.obtained_from IS NULL;
-
--- eliminate column 'obtained_from' in 'coins'
-ALTER TABLE coins
-DROP COLUMN obtained_from;
