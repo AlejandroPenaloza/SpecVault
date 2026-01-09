@@ -24,20 +24,17 @@ create table items (
   updated_at timestamptz default now(),
   subcollection text,
   theme text, 
-  acquisition_cost numeric(10,2), 
-  acquisition_currency char(3) DEFAULT 'USD', 
+  acquisition_cost numeric(10,2) 
+    CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0),
+  acquisition_currency char(3) DEFAULT 'USD' 
+    CHECK (acquisition_currency ~ '^[A-Z]{3}$'), 
   obtained_from text
 );
 
--- Enforce non-negative acquisition cost
-ALTER TABLE items
-ADD CONSTRAINT acquisition_cost_non_negative
-CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0);
+-- index of subcollection in items
+CREATE INDEX idx_items_subcollection
+ON items(subcollection);
 
--- Enforce valid ISO currency format (3 uppercase letters)
-ALTER TABLE items
-ADD CONSTRAINT acquisition_currency_format
-CHECK (acquisition_currency ~ '^[A-Z]{3}$');
 
 -- Create table 'coins'
 -- Coin-specific attributes (1-to-1 with items)
@@ -53,25 +50,13 @@ CREATE TABLE coins (
   composition text,                     -- Metal composition
   edge text,                            -- Reeded, plain, lettered
   finish text,                          -- Proof, business strike, etc.
-  weight numeric(10,4),                 -- Grams
-  diameter numeric(10,2),               -- Millimeters
+  weight numeric(10,4)                  -- Grams
+    CHECK (weight IS NULL OR weight > 0),
+  diameter numeric(10,2)                -- Millimeters
+    CHECK (diameter IS NULL OR diameter > 0),
   mark text,                            -- Special marks or privy marks
   prog_theme text,                      -- Program/theme (e.g. State Quarters)
   condition text,                       -- Grade or condition
   mintage bigint CHECK (mintage >= 0),  -- Number minted
   notes text                            -- Free-form notes
 );
-
--- constraints of positivity for weight and diameter
-ALTER TABLE coins
-ADD CONSTRAINT coins_weight_positive
-CHECK (weight IS NULL OR weight > 0);
-
-ALTER TABLE coins
-ADD CONSTRAINT coins_diameter_positive
-CHECK (diameter IS NULL OR diameter > 0);
--- note that weight/diameter IS NULL is not necessary and used for readibility
-
--- index of subcollection in items
-CREATE INDEX idx_items_subcollection
-ON items(subcollection);
