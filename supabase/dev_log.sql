@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/08
+  Updated: 2026/01/10
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -162,3 +162,41 @@ WHERE c.item_id = i.id
 -- eliminate column 'obtained_from' in 'coins'
 ALTER TABLE coins
 DROP COLUMN obtained_from;
+
+
+-- create table banknotes
+-- banknote-specific attributes (1-to-1 with items)
+CREATE TABLE banknotes (
+  item_id uuid PRIMARY KEY
+    REFERENCES items(id)
+    ON DELETE CASCADE,
+
+  denomination numeric(10,2),           -- face value
+  currency text,                        -- currency name (may be historical)
+  country text,                         -- issuing country or region
+  issuer text,                          -- central bank or authority
+  material text,                        -- paper, polymer, hybrid
+
+  issue_date date,                      -- stored as full date
+  issue_date_precision text             -- date precision reach (year, month, or day)
+    CHECK (issue_date_precision IN ('year', 'month', 'day')
+  ),
+
+  width numeric(10,2)                   -- millimeters
+    CHECK (width IS NULL OR width > 0),
+  height numeric(10,2)                  -- millimeters
+    CHECK (height IS NULL OR height > 0),
+
+  series text,                          -- series/serial number
+  condition text,                       -- grade or condition
+  notes text                            -- free-form notes
+);
+
+-- Enforce logical consistency between issue_date and issue_date_precision
+ALTER TABLE banknotes 
+ADD CONSTRAINT banknotes_issue_date_consistency
+CHECK (
+  (issue_date IS NULL AND issue_date_precision IS NULL)
+OR
+  (issue_date IS NOT NULL AND issue_date_precision IS NOT NULL)
+)

@@ -87,5 +87,13 @@ CREATE TABLE banknotes (
 
   series text,                          -- series/serial number
   condition text,                       -- grade or condition
-  notes text                            -- free-form notes
+  notes text,                           -- free-form notes
+
+  -- Enforce logical consistency between issue_date and issue_date_precision
+  CONSTRAINT banknotes_issue_date_consistency
+  CHECK (
+    (issue_date IS NULL AND issue_date_precision IS NULL)
+    OR
+    (issue_date IS NOT NULL AND issue_date_precision IS NOT NULL)
+  )
 );
