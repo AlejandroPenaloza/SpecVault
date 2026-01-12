@@ -29,7 +29,7 @@ VALUES (
   '2020-01-01'
 );
 
--- Insert corresponding coin record
+-- Insert corresponding coin record (one row)
 INSERT INTO coins (
   item_id,
   denomination,
@@ -55,4 +55,20 @@ VALUES (
   19.05,
   'Circulated',
   'Specification from ucoin.net.'
+);
+
+-- Insert another demo item record (explicit UUID)
+INSERT INTO items (
+  id,
+  name,
+  subcollection,
+  acquired_date, 
+  obtained_from
+)
+VALUES (
+  '00000000-0000-0000-0000-000000000002',
+  '1 Bolivar 1989',
+  'banknotes',
+  '2024-08-03',
+  'Ebay/geraval'
 );
