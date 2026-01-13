@@ -57,18 +57,51 @@ VALUES (
   'Specification from ucoin.net.'
 );
 
--- Insert another demo item record (explicit UUID)
-INSERT INTO items (
-  id,
-  name,
-  subcollection,
-  acquired_date, 
-  obtained_from
+-- Insert another demo item record
+-- single transaction using common table expression 
+-- and returning result (generated id)
+BEGIN;
+
+WITH new_item AS (
+  INSERT INTO items (
+    name, 
+    acquired_date, 
+    subcollection,
+    theme,
+    obtained_from
+  )
+  VALUES (
+    '1 Bolivar 10/05/1989', 
+    '2024-08-03', 
+    'banknotes',
+    'Venezuelan banknotes', 
+    'Ebay/geraval'
+  )
+  RETURNING id
 )
-VALUES (
-  '00000000-0000-0000-0000-000000000002',
-  '1 Bolivar 1989',
-  'banknotes',
-  '2024-08-03',
-  'Ebay/geraval'
-);
+INSERT INTO banknotes (
+  item_id,
+  denomination,
+  currency, 
+  country, 
+  issuer, 
+  issue_date, 
+  issue_date_precision, 
+  width, 
+  height, 
+  series
+)
+SELECT
+  id,
+  1.00, 
+  'Bolivares',
+  'Venezuela', 
+  'Banco Central de Venezuela (BCV)', 
+  '1989-05-10', 
+  'day', 
+  115, 
+  55, 
+  'A51283218'
+FROM new_item;
+
+COMMIT;
