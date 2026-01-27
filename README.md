@@ -23,5 +23,9 @@ Each subcollection maintains a 1-to-1 relationship with `items`.
 Complex many-to-many relationships (e.g. trading cards ↔ players)
 are handled via junction tables.
 
+Thus, tables to immediately include:
+- `players`
+- `player_cards`
+
 
 [In Progress]
