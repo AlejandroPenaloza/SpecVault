@@ -38,6 +38,7 @@ Thus, tables to immediately include:
 - `players`
 - `player_cards`
 
+---
 
 ## Project Structure (so far)
 
