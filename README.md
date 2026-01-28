@@ -10,6 +10,17 @@ It is intended to be a management system for a personal collection,
 covering diverse items and topics such as numismatics, sports memorabilia, and 
 scientific memorabilia.
 
+---
+
+## Tech Stack
+
+- **Frontend:** Flutter (desktop)
+- **Backend:** Supabase (PostgreSQL)
+- **Database:** PostgreSQL (SQL, migrations, constraints)
+- **Other:** Python (data seeding utilities, planned)
+
+---
+
 ## Database Design
 
 SpecVault uses a normalized relational model centered around a generic `items` table,
