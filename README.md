@@ -39,4 +39,20 @@ Thus, tables to immediately include:
 - `player_cards`
 
 
+## Project Structure (so far)
+
+```text
+SpecVault/
+├── supabase/
+│   ├── migrations/      # Incremental schema changes
+│   ├── schema.sql       # Canonical schema snapshot
+│   ├── seed/            # Seed data (minimal, illustrative)
+│   └── dev_log.sql      # SQL scratchpad / development notes
+├── app/                 # Flutter application (in progress)
+├── docs
+    ├── SpecVault_logo_1
+├── README.md
+└── LICENSE
+```
+
 [In Progress]
