@@ -3,10 +3,12 @@
   Migration: 011_create_table_trading_cards
   Author:    Alejandro Penaloza
   Created:   2026/01/18
+  Updated:   2026/01/30
   
   Purpose: 
   To create table 'trading_cards' (for subcollection trading cards).
-  It is intended to be used by junction table 'trading_card_players'.
+  It is intended to be used by junction table 'trading_card_players'
+  (yet to be created).
   */
 
 
