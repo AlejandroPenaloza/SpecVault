@@ -129,7 +129,7 @@ CREATE TABLE trading_cards (
   notes text
 );
 
--- create table trading_cards
+-- create table players
 CREATE TABLE players (
   id uuid PRIMARY KEY
     DEFAULT uuid_generate_v4(),
