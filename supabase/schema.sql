@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/19
+  Updated: 2026/01/30
 */
 
 
@@ -19,7 +19,23 @@ create table items (
   id uuid primary key default uuid_generate_v4(),
   name text not null,
   description text,
-  acquired_date date,
+  acquired_date 
+-- create table trading_cards
+CREATE TABLE players (
+  id uuid PRIMARY KEY
+    DEFAULT uuid_generate_v4(),
+
+  first_name text NOT NULL,               -- Player first name
+  last_name text NOT NULL,                -- Player last name, useful when searching
+  nationality char(2),                    -- ISO-3166-1 alpha-2 (e.g. VE, US)
+
+  birth_year integer 
+    CHECK (
+      birth_year >= 1850                  -- Enforcing time (year) range
+      AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
+    ),
+  notes text                              -- Any other information
+);date,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   subcollection text,
@@ -111,4 +127,21 @@ CREATE TABLE trading_cards (
   condition text,                       -- NM, EX, PSA 9,...
   is_autographed boolean DEFAULT false, -- Whether marker autograph on card
   notes text
+);
+
+-- create table trading_cards
+CREATE TABLE players (
+  id uuid PRIMARY KEY
+    DEFAULT uuid_generate_v4(),
+
+  first_name text NOT NULL,               -- Player first name
+  last_name text NOT NULL,                -- Player last name, useful when searching
+  nationality char(2),                    -- ISO-3166-1 alpha-2 (e.g. VE, US)
+
+  birth_year integer 
+    CHECK (
+      birth_year >= 1850                  -- Enforcing time (year) range
+      AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
+    ),
+  notes text                              -- Any other information
 );
