@@ -3,6 +3,7 @@
   Migration: 012_create_table_players
   Author:    Alejandro Penaloza
   Created:   2026/01/30
+  Updated:   2026/01/30
   
   Purpose: 
   To create table 'players' (for subcollection trading cards).
