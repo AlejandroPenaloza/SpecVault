@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/30
+  Updated: 2026/01/31
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -284,3 +284,9 @@ CREATE TABLE players (
     ),
   notes text                              -- Any other information
 );
+
+
+-- create constraint chk_players_nationality_format
+ALTER TABLE players
+ADD CONSTRAINT chk_players_nationality_format
+CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$');
