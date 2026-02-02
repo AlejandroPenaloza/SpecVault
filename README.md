@@ -36,7 +36,9 @@ are handled via junction tables.
 
 Thus, tables to immediately include:
 - `players`
-- `player_cards`
+- `trading_card_players`
+
+*(A visual schema diagram will be added once the core tables are finalized.)*
 
 ---
 
