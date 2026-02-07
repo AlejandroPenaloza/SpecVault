@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/31
+  Updated: 2026/02/07
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -290,3 +290,19 @@ CREATE TABLE players (
 ALTER TABLE players
 ADD CONSTRAINT chk_players_nationality_format
 CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$');
+
+
+-- create junction table trading_card_players
+CREATE TABLE trading_card_players (
+  trading_card_id uuid
+    REFERENCES trading_cards(item_id) ON DELETE CASCADE,
+
+  player_id uuid
+    REFERENCES players(id) ON DELETE CASCADE,
+
+  player_order smallint NOT NULL,       -- Position/order on the card (1–3)
+  team_name text,                       -- Team shown for this player on this card
+  jersey_number smallint,               -- Jersey number shown on this card
+
+  PRIMARY KEY (trading_card_id, player_id)
+);
