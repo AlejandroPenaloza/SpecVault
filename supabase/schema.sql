@@ -137,8 +137,10 @@ CREATE TABLE players (
 
   birth_year integer 
     CHECK (
-      birth_year >= 1850                  -- Enforcing time (year) range
-      AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
+      birth_year IS NULL OR (             -- Enforcing time (year) range
+        birth_year >=1850
+        AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
+      )
     ),
   notes text                              -- Any other information
 );

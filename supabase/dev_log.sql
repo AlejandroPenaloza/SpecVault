@@ -326,7 +326,7 @@ DROP CONSTRAINT IF EXISTS players_birth_year_check;
 
 -- add fixed constraint (players)
 ALTER TABLE players
-ADD CONSTRAINT chk_players_birth_year_range
+ADD CONSTRAINT chk_player_birth_year_range
 CHECK (
   birth_year >= 1850
   AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
@@ -356,3 +356,20 @@ ALTER COLUMN updated_at SET NOT NULL;
 -- alter is_autographed to be NOT NULL
 ALTER TABLE trading_cards
 ALTER COLUMN is_autographed SET NOT NULL;
+
+
+-- 2026-02-10: drop existing constraint chk_players_birth_year_range and add it 
+-- again allowing NULL values for players.birth_year.
+-- drop current constraint chk_players_birth_year_range
+ALTER TABLE players
+DROP CONSTRAINT chk_player_birth_year_range;
+
+-- recreate constraint allowing NULL
+ALTER TABLE players
+ADD CONSTRAINT chk_player_birth_year_range
+CHECK (
+  birth_year IS NULL OR (
+    birth_year >= 1850
+    AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
+  )
+);
