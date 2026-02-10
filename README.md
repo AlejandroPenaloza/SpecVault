@@ -6,6 +6,8 @@ src="https://raw.githubusercontent.com/AlejandroPenaloza/SpecVault/main/docs/Spe
 </p>
 
 SpecVault is a cross-platform desktop application built with Flutter and Supabase.
+It is a data-driven collection management system designed to catalogue, organize, and 
+explore diverse physical items and subcollections such as numismatics, sports memorabilia, and scientific specimen.
 It is intended to be a management system for a personal collection, 
 covering diverse items and topics such as numismatics, sports memorabilia, and 
 scientific memorabilia.
@@ -23,18 +25,16 @@ scientific memorabilia.
 
 ## Database Design
 
-SpecVault uses a normalized relational model centered around a generic `items` table,
-with subcollection tables such as:
-
-- `coins`
-- `banknotes`
-- `trading_cards`
-
+SpecVault uses a normalized relational model centered around a generic `items` table.
 Each subcollection maintains a 1-to-1 relationship with `items`.
 Complex many-to-many relationships (e.g. trading cards ↔ players)
 are handled via junction tables.
 
-Thus, tables to immediately include:
+The current schema includes the following tables:
+
+- `coins`
+- `banknotes`
+- `trading_cards`
 - `players`
 - `trading_card_players`
 
@@ -55,7 +55,6 @@ Migrations are designed to be applied in order to reproduce the schema from an e
 During early development, migrations may be amended to fix mistakes and keep the migration chain consistent and replayable. 
 As the project stabilizes, schema changes are expected to be introduced via new 
 migrations rather than rewrites, keeping the evolution explicit and auditable.
-Also, when mistakes are discovered, new migrations are added to correct 
 
 *(A visual schema diagram will be added once the core tables are finalized.)*
 
@@ -72,7 +71,7 @@ SpecVault/
 │   └── dev_log.sql      # SQL scratchpad / development notes
 ├── app/                 # Flutter application (in progress)
 ├── docs
-    ├── SpecVault_logo_1
+    └── SpecVault_logo_1
 ├── README.md
 └── LICENSE
 ```
