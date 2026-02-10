@@ -38,6 +38,25 @@ Thus, tables to immediately include:
 - `players`
 - `trading_card_players`
 
+
+### Database Migrations and Schema
+
+This project uses a migration-based approach to manage the database schema.
+- The `supabase/migrations/` directory contains sequential, replayable migrations that 
+represent the authoritative history of schema changes.
+- The `supabase/schema.sql` file is a canonical snapshot of the current database structure, 
+derived from the applied migrations. 
+Intended for documentation and reference, not deployment.
+- The `supabase/dev_log.sql` file is a development log / scratchpad that records 
+exploratory SQL, data moves, and intermediate steps taken during development. 
+It is not idempotent and not meant to be executed end-to-end.
+
+Migrations are designed to be applied in order to reproduce the schema from an empty database. 
+During early development, migrations may be amended to fix mistakes and keep the migration chain consistent and replayable. 
+As the project stabilizes, schema changes are expected to be introduced via new 
+migrations rather than rewrites, keeping the evolution explicit and auditable.
+Also, when mistakes are discovered, new migrations are added to correct 
+
 *(A visual schema diagram will be added once the core tables are finalized.)*
 
 ---
