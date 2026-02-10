@@ -37,8 +37,7 @@ create table items (
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
 
--- 2026-02-10: altered columns created_at, updated_at (no meaningful NULL state)
--- alter created_at, updated_at to be NOT NULL
+-- alter created_at, updated_at to be NOT NULL (no meaningful NULL state)
 ALTER TABLE items
 ALTER COLUMN created_at SET NOT NULL,
 ALTER COLUMN updated_at SET NOT NULL;
@@ -122,7 +121,7 @@ CREATE TABLE trading_cards (
   notes text
 );
 
--- 2026-02-10: altered columns is_autographed to be NOT NULL (no meaningful NULL state)
+-- alter columns is_autographed to be NOT NULL (no meaningful NULL state)
 ALTER TABLE trading_cards
 ALTER COLUMN is_autographed SET NOT NULL;
 
