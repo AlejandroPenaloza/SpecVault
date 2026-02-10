@@ -200,7 +200,7 @@ CHECK (
   (issue_date IS NULL AND issue_date_precision IS NULL)
 OR
   (issue_date IS NOT NULL AND issue_date_precision IS NOT NULL)
-)
+);
 
 
 -- Insert another demo item record
@@ -281,14 +281,12 @@ CREATE TABLE players (
   birth_year integer 
     CHECK (
       birth_year >= 1850                  -- Enforcing time (year) range
-      AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
       -- BUG: substracts days, not years. 
-      -- 2026-02-09: See migration 016_fix_players_birth_year_constraint.sql  
+      -- 2026-02-09: See migration 016_fix_players_birth_year_constraint.sql
       AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
     ),
   notes text                              -- Any other information
 );
-
 
 -- create constraint chk_players_nationality_format
 ALTER TABLE players
@@ -319,14 +317,14 @@ ADD CONSTRAINT uq_trading_card_player_order
 UNIQUE (trading_card_id, player_order);
 
 
--- 2026-02-09: fix CHECK constraint in players.birth_right (CURRENT_DATE - 15 days, not years)
+-- 2026-02-09: fix CHECK constraint in players.birth_year (CURRENT_DATE - 15 days, not years)
 -- drop incorrect constraint
 ALTER TABLE players
 DROP CONSTRAINT IF EXISTS players_birth_year_check;
 
 -- add fixed constraint (players)
 ALTER TABLE players
-ADD CONSTRAINT chk_player_birth_year_range
+ADD CONSTRAINT chk_players_birth_year_range
 CHECK (
   birth_year >= 1850
   AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
@@ -362,11 +360,11 @@ ALTER COLUMN is_autographed SET NOT NULL;
 -- again allowing NULL values for players.birth_year.
 -- drop current constraint chk_players_birth_year_range
 ALTER TABLE players
-DROP CONSTRAINT chk_player_birth_year_range;
+DROP CONSTRAINT chk_players_birth_year_range;
 
 -- recreate constraint allowing NULL
 ALTER TABLE players
-ADD CONSTRAINT chk_player_birth_year_range
+ADD CONSTRAINT chk_players_birth_year_range
 CHECK (
   birth_year IS NULL OR (
     birth_year >= 1850
