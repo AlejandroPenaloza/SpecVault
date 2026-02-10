@@ -282,6 +282,9 @@ CREATE TABLE players (
     CHECK (
       birth_year >= 1850                  -- Enforcing time (year) range
       AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
+      -- BUG: substracts days, not years. 
+      -- 2026-02-09: See migration 016_fix_players_birth_year_constraint.sql  
+      AND birth_year <= EXTRACT(YEAR FROM CURRENT_DATE - 15)
     ),
   notes text                              -- Any other information
 );
@@ -314,3 +317,17 @@ CREATE TABLE trading_card_players (
 ALTER TABLE trading_card_players
 ADD CONSTRAINT uq_trading_card_player_order
 UNIQUE (trading_card_id, player_order);
+
+
+-- 2026-02-09: fix CHECK constraint in players.birth_right (CURRENT_DATE - 15 days, not years)
+-- drop incorrect constraint
+ALTER TABLE players
+DROP CONSTRAINT IF EXISTS players_birth_year_check;
+
+-- add fixed constraint (players)
+ALTER TABLE players
+ADD CONSTRAINT chk_players_birth_year_range
+CHECK (
+  birth_year >= 1850
+  AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
+);
