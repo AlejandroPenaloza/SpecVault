@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/09
+  Updated: 2026/02/10
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -344,3 +344,15 @@ CHECK (player_order BETWEEN 1 AND 3);
 ALTER TABLE trading_card_players
 ADD CONSTRAINT chk_player_jersey_number_range
 CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99);
+
+
+-- 2026-02-10: altered columns items.created_at, items.updated_at, 
+-- trading_cards.is_autographed to be NOT NULL (no meaningful NULL state)
+-- alter created_at, updated_at to be NOT NULL
+ALTER TABLE items
+ALTER COLUMN created_at SET NOT NULL,
+ALTER COLUMN updated_at SET NOT NULL;
+
+-- alter is_autographed to be NOT NULL
+ALTER TABLE trading_cards
+ALTER COLUMN is_autographed SET NOT NULL;

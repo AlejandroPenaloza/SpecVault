@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/09
+  Updated: 2026/02/10
 */
 
 
@@ -33,10 +33,15 @@ create table items (
   obtained_from text
 );
 
-
 -- index of subcollection in items
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
+
+-- 2026-02-10: altered columns created_at, updated_at (no meaningful NULL state)
+-- alter created_at, updated_at to be NOT NULL
+ALTER TABLE items
+ALTER COLUMN created_at SET NOT NULL,
+ALTER COLUMN updated_at SET NOT NULL;
 
 
 -- create table 'coins'
@@ -116,6 +121,10 @@ CREATE TABLE trading_cards (
   is_autographed boolean DEFAULT false, -- Whether marker autograph on card
   notes text
 );
+
+-- 2026-02-10: altered columns is_autographed to be NOT NULL (no meaningful NULL state)
+ALTER TABLE trading_cards
+ALTER COLUMN is_autographed SET NOT NULL;
 
 
 -- create table players
