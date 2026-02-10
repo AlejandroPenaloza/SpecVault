@@ -373,3 +373,9 @@ CHECK (
     AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
   )
 );
+
+
+-- 2026-02-09: alter players to rename constraint to chk_player_birth_year_range
+ALTER TABLE players
+RENAME CONSTRAINT chk_player_birth_year_range
+TO chk_players_birth_year_range;
