@@ -5,14 +5,12 @@
   Created:   2026/02/10
   
   Purpose: 
-  To standardize player.birth_year CHECK constraint name 
-  (plural to singular).
-  From 'chk_players_birth_year_range' to 
-  'chk_player_birth_year_range'.
+  NO-OP
+  ------
+  This migration was originally intended to rename players.birth_year 
+  CHECK constraint.
+  However, migration '019_allow_null_players_birth_year' had 
+  already standardized the name to 'çhk_players_birth_year_name'.
+  Thus, this migration is now intentionally a NO-OP to preserve 
+  a clean, replayable migration chain.
 */
-
-
--- alter players to rename constraint to chk_player_birth_year_range
-ALTER TABLE players
-RENAME CONSTRAINT chk_player_birth_year_range
-TO chk_players_birth_year_range;
