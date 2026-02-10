@@ -18,6 +18,7 @@
 */
 -- DO NOT RUN IN PRODUCTION
 
+
 create extension if not exists "uuid-ossp";
 
 -- Create base table 'items'
