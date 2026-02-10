@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/07
+  Updated: 2026/02/09
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -306,3 +306,10 @@ CREATE TABLE trading_card_players (
 
   PRIMARY KEY (trading_card_id, player_id)
 );
+
+
+-- create constraint uq_trading_card_player_order
+-- enforce player_order not repeated between multiple players in trading card
+ALTER TABLE trading_card_players
+ADD CONSTRAINT uq_trading_card_player_order
+UNIQUE (trading_card_id, player_order);
