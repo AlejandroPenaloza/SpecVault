@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/10
+  Updated: 2026/02/11
 */
 
 
@@ -19,13 +19,17 @@ create extension if not exists "uuid-ossp";
 create table items (
   -- Random generated id if not specified
   id uuid primary key default uuid_generate_v4(),
+
   name text not null,
   description text,
   acquired_date date,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
+
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+
   subcollection text,
   theme text, 
+
   acquisition_cost numeric(10,2) 
     CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0),
   acquisition_currency char(3) DEFAULT 'USD' 
@@ -36,11 +40,6 @@ create table items (
 -- index of subcollection in items
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
-
--- alter created_at, updated_at to be NOT NULL (no meaningful NULL state)
-ALTER TABLE items
-ALTER COLUMN created_at SET NOT NULL,
-ALTER COLUMN updated_at SET NOT NULL;
 
 
 -- create table 'coins'
