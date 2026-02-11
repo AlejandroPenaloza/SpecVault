@@ -2,7 +2,7 @@
 
 <p align="center">
 <img
-src="https://raw.githubusercontent.com/AlejandroPenaloza/SpecVault/main/docs/SpecVault_logo_1.jpg" alt="Project SpecVault logo" width="350">
+src="https://raw.githubusercontent.com/AlejandroPenaloza/SpecVault/main/docs/SpecVault_logo_1.jpg" alt="Project SpecVault logo" width="450">
 </p>
 
 SpecVault is a cross-platform desktop application built with Flutter and Supabase.
