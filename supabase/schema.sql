@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/11
+  Updated: 2026/02/12
 */
 
 
@@ -110,19 +110,16 @@ CREATE TABLE trading_cards (
   item_id uuid PRIMARY KEY
     REFERENCES items(id) ON DELETE CASCADE,
 
-  topic text NOT NULL,                  -- Sport, discipline, or other topic
-  brand text,                           -- Topps, Panini, Upper Deck
-  set_name text,                        -- Set or series name
-  year integer CHECK (year >= 1800),    -- Card issue year
-  card_number text,                     -- Alphanumeric
-  condition text,                       -- NM, EX, PSA 9,...
-  is_autographed boolean DEFAULT false, -- Whether marker autograph on card
+  topic text NOT NULL,                           -- Sport, discipline, or other topic
+  brand text,                                    -- Topps, Panini, Upper Deck
+  set_name text,                                 -- Set or series name
+  year integer CHECK (year >= 1800),             -- Card issue year
+  card_number text,                              -- Alphanumeric
+  condition text,                                -- NM, EX, PSA 9,...
+  is_autographed boolean NOT NULL DEFAULT false, -- Whether marker autograph on card
+  
   notes text
 );
-
--- alter columns is_autographed to be NOT NULL (no meaningful NULL state)
-ALTER TABLE trading_cards
-ALTER COLUMN is_autographed SET NOT NULL;
 
 
 -- create table players
