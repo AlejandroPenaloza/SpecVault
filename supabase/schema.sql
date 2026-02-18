@@ -139,12 +139,10 @@ CREATE TABLE players (
       )
     ),
   notes text                              -- Any other information
-);
 
--- create constraint chk_players_nationality_format
-ALTER TABLE players
-ADD CONSTRAINT chk_players_nationality_format
-CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$');
+  CONSTRAINT chk_players_nationality_format
+    CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$')
+);
 
 
 -- create junction table trading_card_players
@@ -159,21 +157,14 @@ CREATE TABLE trading_card_players (
   team_name text,                       -- Team shown for this player on this card
   jersey_number smallint,               -- Jersey number shown on this card
 
-  PRIMARY KEY (trading_card_id, player_id)
+  PRIMARY KEY (trading_card_id, player_id),
+
+  CONSTRAINT uq_trading_card_player_order
+    UNIQUE (trading_card_id, player_order),
+
+  CONSTRAINT chk_player_order_range
+    CHECK (player_order BETWEEN 1 AND 3),
+
+  CONSTRAINT chk_player_jersey_number_range
+    CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99)
 );
-
--- create constraint uq_trading_card_player_order
--- enforce player_order not repeated between multiple players in trading card
-ALTER TABLE trading_card_players
-ADD CONSTRAINT uq_trading_card_player_order
-UNIQUE (trading_card_id, player_order);
-
--- add constraint chk_player_order_range
-ALTER TABLE trading_card_players
-ADD CONSTRAINT chk_player_order_range
-CHECK (player_order BETWEEN 1 AND 3);
-
--- add constraint chk_player_jersey_number_range
-ALTER TABLE trading_card_players
-ADD CONSTRAINT chk_player_jersey_number_range
-CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99);
