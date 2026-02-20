@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/19
+  Updated: 2026/02/20
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -394,3 +394,61 @@ CHECK (primary_position IS NULL OR primary_position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]
 ALTER TABLE trading_card_players
 ADD CONSTRAINT chk_trading_card_players_position_format
 CHECK (position IS NULL OR position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
+
+
+-- insert single demo trading card row to base table items
+-- subsequently, to tables trading_cards, players, and junction 
+-- table trading_card_players
+BEGIN;
+
+WITH
+-- base item and capture id
+new_item AS (
+  INSERT INTO items (name, acquired_date, subcollection, theme, obtained_from)
+  VALUES (
+    'Bobby Abreu Baseball Card Fleer 2001',
+    '2014-11-15',
+    'trading cards',
+    'Baseball Cards',
+    'Previous collection'
+  )
+  RETURNING id
+),
+
+-- trading_cards row using new item id
+new_card AS (
+  INSERT INTO trading_cards (
+    item_id, topic, brand, set_name, year, card_number, is_autographed
+  )
+  SELECT
+    id,
+    'Baseball',
+    'Fleer',
+    'Fleer 2001',
+    2001,
+    '76',
+    false
+  FROM new_item
+  RETURNING item_id
+),
+
+-- player row
+new_player AS (
+  INSERT INTO players (first_name, last_name, nationality, birth_year, primary_position)
+  VALUES ('Bobby', 'Abreu', 'VE', 1974, 'OF')
+  RETURNING id
+)
+
+-- 4) Link player to the card (junction row)
+INSERT INTO trading_card_players (
+  trading_card_id, player_id, player_order, team_name, jersey_number, position
+)
+SELECT
+  (SELECT item_id FROM new_card),
+  (SELECT id FROM new_player),
+  1,
+  'Philadelphia Phillies',
+  53,
+  'OF';
+
+COMMIT;

@@ -3,7 +3,7 @@
   File: seed.sql
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/01/13
+  Updated: 2026/02/20
 
   Purpose:
   Insert representative sample data for development
@@ -104,5 +104,63 @@ SELECT
   55, 
   'A51283218'
 FROM new_item;
+
+COMMIT;
+
+
+-- Insert single demo trading card row to base table items
+-- Subsequently, to tables trading_cards, players, and junction 
+-- table trading_card_players
+BEGIN;
+
+WITH
+-- base item and capture id
+new_item AS (
+  INSERT INTO items (name, acquired_date, subcollection, theme, obtained_from)
+  VALUES (
+    'Bobby Abreu Baseball Card Fleer 2001',
+    '2014-11-15',
+    'trading cards',
+    'Baseball Cards',
+    'Previous collection'
+  )
+  RETURNING id
+),
+
+-- trading_cards row using new item id
+new_card AS (
+  INSERT INTO trading_cards (
+    item_id, topic, brand, set_name, year, card_number, is_autographed
+  )
+  SELECT
+    id,
+    'Baseball',
+    'Fleer',
+    'Fleer 2001',
+    2001,
+    '76',
+    false
+  FROM new_item
+  RETURNING item_id
+),
+
+-- player row
+new_player AS (
+  INSERT INTO players (first_name, last_name, nationality, birth_year, primary_position)
+  VALUES ('Bobby', 'Abreu', 'VE', 1974, 'OF')
+  RETURNING id
+)
+
+-- 4) Link player to the card (junction row)
+INSERT INTO trading_card_players (
+  trading_card_id, player_id, player_order, team_name, jersey_number, position
+)
+SELECT
+  (SELECT item_id FROM new_card),
+  (SELECT id FROM new_player),
+  1,
+  'Philadelphia Phillies',
+  53,
+  'OF';
 
 COMMIT;
