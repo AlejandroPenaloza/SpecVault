@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/10
+  Updated: 2026/02/19
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -358,6 +358,7 @@ ALTER COLUMN is_autographed SET NOT NULL;
 
 -- 2026-02-10: drop existing constraint chk_players_birth_year_range and add it 
 -- again allowing NULL values for players.birth_year.
+
 -- drop current constraint chk_players_birth_year_range
 ALTER TABLE players
 DROP CONSTRAINT chk_players_birth_year_range;
@@ -371,3 +372,25 @@ CHECK (
     AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
   )
 );
+
+
+-- 2026-02-19: add player position columns in players, trading_card_players 
+-- and corresponding constraints for format validation
+
+-- add position column to players
+ALTER TABLE players
+ADD COLUMN primary_position text;
+
+-- add card-specific position to trading_card_players
+ALTER TABLE trading_card_players
+ADD COLUMN position text;
+
+-- format validation (traditional position abbreviations)
+-- for both columns 
+ALTER TABLE players
+ADD CONSTRAINT chk_players_prim_pos_format 
+CHECK (primary_position IS NULL OR primary_position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$');
+
+ALTER TABLE trading_card_players
+ADD CONSTRAINT chk_trading_card_players_position_format
+CHECK (position IS NULL OR position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
