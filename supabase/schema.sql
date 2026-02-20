@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/17
+  Updated: 2026/02/19
 */
 
 
@@ -138,10 +138,14 @@ CREATE TABLE players (
         AND birth_year <= (EXTRACT(YEAR FROM CURRENT_DATE)::int - 15)
       )
     ),
-  notes text                              -- Any other information
+  notes text,                             -- Any other information
+  primary_position text,                  -- Usual/career playing position
 
   CONSTRAINT chk_players_nationality_format
     CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$')
+
+  CONSTRAINT chk_players_prim_pos_format
+    CHECK (primary_position IS NULL OR primary_position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
 );
 
 
@@ -156,6 +160,7 @@ CREATE TABLE trading_card_players (
   player_order smallint NOT NULL,       -- Position/order on the card (1–3)
   team_name text,                       -- Team shown for this player on this card
   jersey_number smallint,               -- Jersey number shown on this card
+  position text,                        -- Card-specific playing position
 
   PRIMARY KEY (trading_card_id, player_id),
 
@@ -166,5 +171,8 @@ CREATE TABLE trading_card_players (
     CHECK (player_order BETWEEN 1 AND 3),
 
   CONSTRAINT chk_player_jersey_number_range
-    CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99)
+    CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99),
+
+  CONSTRAINT chk_trading_card_players_position_format
+    CHECK (position IS NULL OR position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
 );
