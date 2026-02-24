@@ -3,7 +3,7 @@
   File: seed.sql
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/20
+  Updated: 2026/02/23
 
   Purpose:
   Insert representative sample data for development
@@ -162,5 +162,62 @@ SELECT
   'Philadelphia Phillies',
   53,
   'OF';
+
+COMMIT;
+
+
+-- Insert another demo item record
+-- single transaction using common table expression 
+-- and returning result (generated id)
+BEGIN;
+
+WITH new_item AS (
+  INSERT INTO items (
+    name, acquired_date, subcollection, theme, obtained_from
+  )
+  VALUES (
+    '3 Cents USA Stamp 1952',
+    '2022-05-30',
+    'stamps',
+    'USA',
+    'Mount Rushmore National Memorial gift shop; Keystone, SD'
+  )
+  RETURNING id
+)
+INSERT INTO stamps (
+  item_id,
+  country,
+  issue_year,
+  issue_date,
+  denomination_text,
+  currency,
+  stamp_type,
+  format,
+  perforation,
+  printing_method,
+  main_color,
+  condition,
+  catalog_system,
+  catalog_number,
+  notes
+)
+SELECT
+  id,
+  'USA',
+  1952,
+  '1952-08-11',
+  '3 cents',
+  'USD',
+  'commemorative',
+  'single',
+  '10 1/2 x 11',
+  'rotary press',
+  'green',
+  'Mint',
+  'Scott',
+  'US1011',
+  'Commemorates the 25th anniversary of the Mount Rushmore National Memorial. 
+    Obtained there during road trip to South Dakota.'
+FROM new_item;
 
 COMMIT;
