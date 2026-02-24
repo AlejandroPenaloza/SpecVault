@@ -477,7 +477,7 @@ CREATE TABLE stamps (
   perforation text,                       -- e.g., "11", "12 1/2", "imperforate"
   watermark text,                         -- if applicable
   printing_method text,                   -- engraved, litho, offset, etc.
-  color text,                             -- free-text
+  color text,                             -- dominating color in stamp
 
   condition text,                         -- MNH, MH, Used, CTO, etc.
   is_on_cover boolean DEFAULT false NOT NULL,  -- true if item is a cover (simple flag for now)
@@ -486,3 +486,7 @@ CREATE TABLE stamps (
   catalog_number text,                    -- e.g., "Scott 1234"
   notes text
 );
+
+-- alter table stamps to rename column to main_color
+ALTER TABLE stamps
+RENAME COLUMN color TO main_color;

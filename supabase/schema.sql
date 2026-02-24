@@ -199,7 +199,7 @@ CREATE TABLE stamps (
   perforation text,                       -- e.g., "11", "12 1/2", "imperforate"
   watermark text,                         -- if applicable
   printing_method text,                   -- engraved, litho, offset, etc.
-  color text,                             -- free-text
+  main_color text,                        -- dominating color in stamp
 
   condition text,                         -- MNH, MH, Used, CTO, etc.
   is_on_cover boolean DEFAULT false NOT NULL,  -- true if item is a cover (simple flag for now)
