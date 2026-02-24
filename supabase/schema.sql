@@ -191,7 +191,7 @@ CREATE TABLE stamps (
       (issue_year >= 1600 AND issue_year <= EXTRACT(YEAR FROM CURRENT_DATE)::int)),
 
   issue_date date,                        -- exact issue date if known (optional)
-  denomination_text text,                 -- "5c", "1 euro" etc.
+  denomination_text text,                 -- "5c", "1 euro", 0.5 bolívares, 2£, etc.
   currency text,                          -- Optional: "USD", "EUR", "GBP", etc. (or leave null)
 
   stamp_type text,                        -- definitive, commemorative, airmail, revenue, etc.
