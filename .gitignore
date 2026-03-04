@@ -10,3 +10,6 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Supabase local state
+supabase/.temp
