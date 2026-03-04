@@ -42,21 +42,46 @@ The current schema includes the following tables:
 ### Database Migrations and Schema
 
 This project uses a migration-based approach to manage the database schema.
-- The `supabase/migrations/` directory contains sequential, replayable migrations that 
-represent the authoritative history of schema changes.
-- The `supabase/schema.sql` file is a canonical snapshot of the current database structure, 
-derived from the applied migrations. 
-Intended for documentation and reference, not deployment.
-- The `supabase/dev_log.sql` file is a development log / scratchpad that records 
-exploratory SQL, data moves, and intermediate steps taken during development. 
-It is not idempotent and not meant to be executed end-to-end.
 
-Migrations are designed to be applied in order to reproduce the schema from an empty database. 
+The database is hosted on Supabase (PostgreSQL), and schema evolution is managed using the Supabase CLI migration workflow.
+
+Migrations are designed to be applied in order to reconstruct the database schema from a empty/clean state. 
 During early development, migrations may be amended to fix mistakes and keep the migration chain consistent and replayable. 
-As the project stabilizes, schema changes are expected to be introduced via new 
+As the project stabilizes, schema changes were introduced via new 
 migrations rather than rewrites, keeping the evolution explicit and auditable.
 
+- The `supabase/migrations/` directory contains the authoritative sequence of schema migrations applied to the database.
+- Migrations are created locally using the Supabase CLI (`supabase migration new`) and applied to the remote database using `supabase db push`.
+- Each migration file is timestamped by the CLI to guarantee deterministic ordering of schema changes.
+
+During the early stages of development, schema modifications were executed directly in the Supabase SQL editor while the core database structure was being designed. Once the schema stabilized, the project transitioned to a CLI-managed migration workflow.
+
+At that point, the current remote database structure was imported as a **baseline migration** using:
+```
+supabase db pull
+```
+
+Earlier exploratory migration scripts from the initial development phase are preserved in:
+
+```
+supabase/migrations_legacy/
+```
+
+
+- `supabase/schema.sql`  
+  Canonical snapshot of the current database schema, derived from the applied migrations. Intended for documentation and reference rather than deployment.
+
+- `supabase/dev_log.sql`  
+  Development log / scratchpad containing exploratory queries, intermediate schema modifications, and testing statements executed during development. This file is **not idempotent** and is not intended to be executed end-to-end.
+
+Together, these resources provide both:
+
+- a **replayable migration history** for database deployment, and  
+- a **transparent development record** of the database design process.
+
 *(A visual schema diagram will be added once the core tables are finalized.)*
+
+
 
 ---
 
@@ -65,11 +90,12 @@ migrations rather than rewrites, keeping the evolution explicit and auditable.
 ```text
 SpecVault/
 ├── supabase/
-│   ├── migrations/      # Incremental schema changes
-│   ├── schema.sql       # Canonical schema snapshot
-│   ├── seed/            # Seed data (minimal, illustrative)
-│   └── dev_log.sql      # SQL scratchpad / development notes
-├── app/                 # Flutter application (in progress)
+│   ├── migrations/        # Supabase CLI managed migrations
+│   ├── migrations_legacy  # Earlier pre-CLI migrations
+│   ├── schema.sql         # Canonical schema snapshot
+│   ├── seed/              # Seed data (minimal, illustrative)
+│   └── dev_log.sql        # SQL scratchpad / development notes
+├── app/                   # Flutter application (in progress)
 ├── docs
     └── SpecVault_logo_1
 ├── README.md
