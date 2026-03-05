@@ -12,6 +12,9 @@
 */
 
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+SET search_path = public, extensions;
+
 -- biological taxonomy hierarchy used to classify Lepidoptera specimens
 CREATE TABLE taxa (
   id uuid PRIMARY KEY
