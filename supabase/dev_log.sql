@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/02/23
+  Updated: 2026/03/04
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -454,7 +454,7 @@ SELECT
 COMMIT;
 
 
--- 2026-02-23: create table stamps to represents subcollection stamps
+-- 2026-02-23: create table stamps to represent subcollection stamps
 
 -- create table stamps
 -- stamp-specific attributes (1-to-1 with items)
@@ -490,3 +490,38 @@ CREATE TABLE stamps (
 -- alter table stamps to rename column to main_color
 ALTER TABLE stamps
 RENAME COLUMN color TO main_color;
+
+
+-- 2026-03-04: create table taxa to be included in representation of 
+-- subcollection lepidoptera
+
+-- create table taxa
+-- biological taxonomy hierarchy used to classify Lepidoptera specimens
+CREATE TABLE taxa (
+  id uuid PRIMARY KEY
+    DEFAULT uuid_generate_v4(),
+
+  tax_name text NOT NULL,
+  rank text NOT NULL,
+
+  parent_id uuid
+    REFERENCES taxa(id)
+    ON DELETE RESTRICT,
+
+  authority text,     -- e.g. "Linnaeus, 1758"
+  common_name text,   -- optional vernacular name
+  notes text,
+
+  CONSTRAINT chk_taxa_rank
+    CHECK (
+      rank IN (
+        'family',
+        'subfamily',
+        'tribe',
+        'subtribe',
+        'genus',
+        'species',
+        'subspecies'
+      )
+    )
+);
