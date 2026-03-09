@@ -1,0 +1,132 @@
+// SpecVault database schema diagram
+// -----------------------------------
+// Simplified visualization of supabase/schema.sql
+// Used to generate ER diagram
+// -----------------------------------
+// Created: 03/09/2026
+// Updated: 03/09/2026
+
+
+Table items {
+  id uuid [pk]
+  name text
+  description text
+  acquired_date date
+  created_at timestamptz
+  updated_at timestamptz
+  subcollection text
+  theme text
+  acquisition_cost numeric
+  acquisition_currency char(3)
+  obtained_from text
+}
+
+Table coins {
+  item_id uuid [pk]
+  denomination numeric
+  currency text
+  year integer
+  country text
+  mint text
+  mint_code text
+  composition text
+  edge text
+  finish text
+  weight numeric
+  diameter numeric
+  mark text
+  prog_theme text
+  condition text
+  mintage bigint
+  notes text
+}
+
+Table banknotes {
+  item_id uuid [pk]
+  denomination numeric
+  currency text
+  country text
+  issuer text
+  material text
+  issue_date date
+  issue_date_precision text
+  width numeric
+  height numeric
+  series text
+  condition text
+  notes text
+}
+
+Table trading_cards {
+  item_id uuid [pk]
+  topic text
+  brand text
+  set_name text
+  year integer
+  card_number text
+  condition text
+  is_autographed boolean
+  notes text
+}
+
+Table players {
+  id uuid [pk]
+  first_name text
+  last_name text
+  nationality char(2)
+  birth_year integer
+  primary_position text
+  notes text
+}
+
+Table trading_card_players {
+  trading_card_id uuid
+  player_id uuid
+  player_order smallint
+  team_name text
+  jersey_number smallint
+  position text
+}
+
+Table stamps {
+  item_id uuid [pk]
+  country text
+  issue_year integer
+  issue_date date
+  denomination_text text
+  currency text
+  stamp_type text
+  format text
+  perforation text
+  watermark text
+  printing_method text
+  main_color text
+  condition text
+  is_on_cover boolean
+  catalog_system text
+  catalog_number text
+  notes text
+}
+
+Table taxa {
+  id uuid [pk]
+  tax_name text
+  rank text
+  parent_id uuid
+  authority text
+  common_name text
+  notes text
+}
+
+
+// Relationships
+
+Ref: coins.item_id > items.id
+Ref: banknotes.item_id > items.id
+Ref: trading_cards.item_id > items.id
+Ref: stamps.item_id > items.id
+
+Ref: trading_card_players.trading_card_id > trading_cards.item_id
+Ref: trading_card_players.player_id > players.id
+
+Ref: taxa.parent_id > taxa.id
