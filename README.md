@@ -79,7 +79,25 @@ Together, these resources provide both:
 - a **replayable migration history** for database deployment, and  
 - a **transparent development record** of the database design process.
 
-*(A visual schema diagram will be added once the core tables are finalized.)*
+
+The relational structure of the SpecVault database is illustrated in the
+diagram below (`docs/schema_diagram.svg`).
+
+![SpecVault Database Schema](docs/schema_diagram.svg)
+
+The diagram represents a simplified view of the database structure centered
+around the `items` base table and its subcollection tables. It highlights the
+main relationships between entities such as trading cards, players, and
+biological taxonomy.
+
+The diagram was generated using **DBML (Database Markup Language)** and the
+source file is available at:
+
+`docs/schema.dbml`
+
+The authoritative database definition remains the SQL schema located in:
+
+`supabase/schema.sql`
 
 
 
