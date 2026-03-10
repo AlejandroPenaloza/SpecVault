@@ -90,8 +90,8 @@ around the `items` base table and its subcollection tables. It highlights the
 main relationships between entities such as trading cards, players, and
 biological taxonomy.
 
-The diagram was generated using **DBML (Database Markup Language)** and the
-source file is available at:
+The diagram was generated using **DBML (Database Markup Language)**, through dbdiagram.io, 
+and the source file is available at:
 
 `docs/schema.dbml`
 
