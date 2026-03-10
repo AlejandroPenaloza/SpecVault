@@ -115,7 +115,9 @@ SpecVault/
 │   └── dev_log.sql        # SQL scratchpad / development notes
 ├── app/                   # Flutter application (in progress)
 ├── docs
-    └── SpecVault_logo_1
+    ├── SpecVault_logo_1
+    ├── schema.dbml        # dbml file for dbdiagram.io
+    └── schema_diagram.svg # database schema diagram image
 ├── README.md
 └── LICENSE
 ```
