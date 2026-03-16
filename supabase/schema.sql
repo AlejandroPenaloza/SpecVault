@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/04
+  Updated: 2026/03/16
 */
 
 
@@ -142,7 +142,7 @@ CREATE TABLE players (
   primary_position text,                  -- Usual/career playing position
 
   CONSTRAINT chk_players_nationality_format
-    CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$')
+    CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$'),
 
   CONSTRAINT chk_players_prim_pos_format
     CHECK (primary_position IS NULL OR primary_position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
