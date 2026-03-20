@@ -532,3 +532,10 @@ CREATE TABLE taxa (
 -- alter table taxa to add column type_locality
 ALTER TABLE taxa
 ADD COLUMN type_locality text;
+
+-- add indexes for traversal of taxa
+CREATE INDEX idx_taxa_tax_name
+ON taxa(tax_name);
+
+CREATE INDEX idx_taxa_parent_id
+ON taxa(parent_id);

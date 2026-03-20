@@ -241,3 +241,10 @@ CREATE TABLE taxa (
       )
     )
 );
+
+-- indexes of taxa for traversal
+CREATE INDEX idx_taxa_tax_name
+ON taxa(tax_name);
+
+CREATE INDEX idx_taxa_parent_id
+ON taxa(parent_id);
