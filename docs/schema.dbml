@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 03/09/2026
+// Updated: 03/20/2026
 
 
 Table items {
@@ -115,6 +115,7 @@ Table taxa {
   parent_id uuid
   authority text
   common_name text
+  type_locality text
   notes text
 }
 

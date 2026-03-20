@@ -527,7 +527,7 @@ CREATE TABLE taxa (
 );
 
 
--- 2026-03-04: update table taxa
+-- 2026-03-20: update table taxa
 
 -- alter table taxa to add column type_locality
 ALTER TABLE taxa
