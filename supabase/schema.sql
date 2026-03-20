@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/16
+  Updated: 2026/03/20
 */
 
 
@@ -225,6 +225,7 @@ CREATE TABLE taxa (
 
   authority text,     -- e.g. "Linnaeus, 1758"
   common_name text,   -- optional vernacular name
+  type_locality text, -- type locality for taxon
   notes text,
 
   CONSTRAINT chk_taxa_rank

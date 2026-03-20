@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/04
+  Updated: 2026/03/20
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -525,3 +525,10 @@ CREATE TABLE taxa (
       )
     )
 );
+
+
+-- 2026-03-04: update table taxa
+
+-- alter table taxa to add column type_locality
+ALTER TABLE taxa
+ADD COLUMN type_locality text;
