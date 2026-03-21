@@ -1,6 +1,6 @@
 /*
   SpecVault Database
-  log.sql
+  build_log.sql
   -------------------------
   Notes to work as a chronological record of SQL code executed 
   during development, including exploratory queries, testing, 

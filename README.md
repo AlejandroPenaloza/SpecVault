@@ -109,10 +109,10 @@ The authoritative database definition remains the SQL schema located in:
 SpecVault/
 ├── supabase/
 │   ├── migrations/        # Supabase CLI managed migrations
-│   ├── migrations_legacy  # Earlier pre-CLI migrations
+│   ├── pre_cli_migrations # Earlier pre-CLI migrations
 │   ├── schema.sql         # Canonical schema snapshot
 │   ├── seed/              # Seed data (minimal, illustrative)
-│   └── dev_log.sql        # SQL scratchpad / development notes
+│   └── build_log.sql      # SQL scratchpad / development notes
 ├── app/                   # Flutter application (in progress)
 ├── docs
     ├── SpecVault_logo_1
