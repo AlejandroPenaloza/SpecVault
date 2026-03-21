@@ -37,6 +37,8 @@ The current schema includes the following tables:
 - `trading_cards`
 - `players`
 - `trading_card_players`
+- `taxa`
+- `specimens`
 
 
 ### Database Migrations and Schema

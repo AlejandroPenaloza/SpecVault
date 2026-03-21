@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 03/20/2026
+// Updated: 03/21/2026
 
 
 Table items {
@@ -117,6 +117,18 @@ Table taxa {
   common_name text
   type_locality text
   notes text
+}
+
+Table specimens {
+  item_id uuid [pk, ref: > items.id]
+  taxon_id uuid [not null, unique, ref: > taxa.id]
+  sex text
+  wingspan_mm numeric(5,2)
+  main_color text
+  notes text
+
+  // Owned Lepidoptera specimen records. 
+  // Current project scope allows at most one specimen per represented species/subspecies.
 }
 
 
