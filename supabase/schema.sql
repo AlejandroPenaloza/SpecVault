@@ -323,3 +323,34 @@ BEFORE INSERT OR UPDATE OF rank, parent_id
 ON taxa
 FOR EACH ROW
 EXECUTE FUNCTION validate_parent_child_rank();
+
+
+-- create table specimens
+-- Under the current project scope, at most one specimen is stored
+-- per species or subspecies represented in the collection.
+CREATE TABLE specimens (
+  item_id uuid PRIMARY KEY
+    REFERENCES items(id)
+    ON DELETE CASCADE,
+
+  taxon_id uuid NOT NULL
+    REFERENCES taxa(id)
+    ON DELETE RESTRICT,
+
+  sex text
+    CHECK (sex IN (
+      'male', 
+      'female', 
+      'unknown'
+    )
+  ),
+
+  wingspan_mm numeric(5,2)
+    CHECK (wingspan_mm IS NULL OR wingspan_mm > 0),
+
+  main_color text,
+  notes text,
+
+  CONSTRAINT uq_specimens_taxon_id
+    UNIQUE (taxon_id)
+);
