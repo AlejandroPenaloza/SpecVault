@@ -66,14 +66,14 @@ supabase db pull
 Earlier exploratory migration scripts from the initial development phase are preserved in:
 
 ```
-supabase/migrations_legacy/
+supabase/pre_cli_migrations/
 ```
 
 
 - `supabase/schema.sql`  
   Canonical snapshot of the current database schema, derived from the applied migrations. Intended for documentation and reference rather than deployment.
 
-- `supabase/dev_log.sql`  
+- `supabase/build_log.sql`  
   Development log / scratchpad containing exploratory queries, intermediate schema modifications, and testing statements executed during development. This file is **not idempotent** and is not intended to be executed end-to-end.
 
 Together, these resources provide both:
