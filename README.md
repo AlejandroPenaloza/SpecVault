@@ -101,6 +101,16 @@ The authoritative database definition remains the SQL schema located in:
 
 `supabase/schema.sql`
 
+### Environment variables
+
+To replicate the project locally, create a local `.env` file from the provided template:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in your Supabase project URL and public client key.
+Do not commit your real .env file to the repository.
 
 
 ---
