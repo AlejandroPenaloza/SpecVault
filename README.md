@@ -6,10 +6,10 @@ src="https://raw.githubusercontent.com/AlejandroPenaloza/SpecVault/main/docs/Spe
 </p>
 
 SpecVault is a cross-platform desktop application built with Flutter and Supabase.
-It is a data-driven collection management system designed to catalogue, organize, and 
+It is a data-driven collection management system designed to catalogue, organize, and
 explore diverse physical items and subcollections such as numismatics, sports memorabilia, and scientific specimen.
-It is intended to be a management system for a personal collection, 
-covering diverse items and topics such as numismatics, sports memorabilia, and 
+It is intended to be a management system for a personal collection,
+covering diverse items and topics such as numismatics, sports memorabilia, and
 scientific memorabilia.
 
 ---
@@ -39,7 +39,7 @@ The current schema includes the following tables:
 - `trading_card_players`
 - `taxa`
 - `specimens`
-
+- `regions`
 
 ### Database Migrations and Schema
 
@@ -47,9 +47,9 @@ This project uses a migration-based approach to manage the database schema.
 
 The database is hosted on Supabase (PostgreSQL), and schema evolution is managed using the Supabase CLI migration workflow.
 
-Migrations are designed to be applied in order to reconstruct the database schema from a empty/clean state. 
-During early development, migrations may be amended to fix mistakes and keep the migration chain consistent and replayable. 
-As the project stabilizes, schema changes were introduced via new 
+Migrations are designed to be applied in order to reconstruct the database schema from a empty/clean state.
+During early development, migrations may be amended to fix mistakes and keep the migration chain consistent and replayable.
+As the project stabilizes, schema changes were introduced via new
 migrations rather than rewrites, keeping the evolution explicit and auditable.
 
 - The `supabase/migrations/` directory contains the authoritative sequence of schema migrations applied to the database.
@@ -59,6 +59,7 @@ migrations rather than rewrites, keeping the evolution explicit and auditable.
 During the early stages of development, schema modifications were executed directly in the Supabase SQL editor while the core database structure was being designed. Once the schema stabilized, the project transitioned to a CLI-managed migration workflow.
 
 At that point, the current remote database structure was imported as a **baseline migration** using:
+
 ```
 supabase db pull
 ```
@@ -69,7 +70,6 @@ Earlier exploratory migration scripts from the initial development phase are pre
 supabase/pre_cli_migrations/
 ```
 
-
 - `supabase/schema.sql`  
   Canonical snapshot of the current database schema, derived from the applied migrations. Intended for documentation and reference rather than deployment.
 
@@ -78,9 +78,8 @@ supabase/pre_cli_migrations/
 
 Together, these resources provide both:
 
-- a **replayable migration history** for database deployment, and  
+- a **replayable migration history** for database deployment, and
 - a **transparent development record** of the database design process.
-
 
 The relational structure of the SpecVault database is illustrated in the
 diagram below (`docs/schema_diagram.svg`).
@@ -92,7 +91,7 @@ around the `items` base table and its subcollection tables. It highlights the
 main relationships between entities such as trading cards, players, and
 biological taxonomy.
 
-The diagram was generated using **DBML (Database Markup Language)**, through dbdiagram.io, 
+The diagram was generated using **DBML (Database Markup Language)**, through dbdiagram.io,
 and the source file is available at:
 
 `docs/schema.dbml`
@@ -111,7 +110,6 @@ cp .env.example .env
 
 Then fill in your Supabase project URL and public client key.
 Do not commit your real .env file to the repository.
-
 
 ---
 
