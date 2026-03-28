@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 03/21/2026
+// Updated: 03/27/2026
 
 
 Table items {
@@ -131,6 +131,16 @@ Table specimens {
   // Current project scope allows at most one specimen per represented species/subspecies.
 }
 
+Table regions {
+  code text [pk]
+  name text
+  region_type text
+  parent_code text
+  notes text
+
+  // Hierarchical geographic regions used to describe
+  // taxon occurrence/distribution.
+}
 
 // Relationships
 
@@ -143,3 +153,4 @@ Ref: trading_card_players.trading_card_id > trading_cards.item_id
 Ref: trading_card_players.player_id > players.id
 
 Ref: taxa.parent_id > taxa.id
+Ref: regions.parent_code > regions.code
