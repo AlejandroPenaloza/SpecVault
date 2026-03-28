@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/21
+  Updated: 2026/03/27
 */
 
 
@@ -392,3 +392,39 @@ BEFORE INSERT OR UPDATE OF taxon_id
 ON specimens
 FOR EACH ROW
 EXECUTE FUNCTION check_spec_taxon_rank();
+
+
+-- create table regions
+-- hierarchical geographic regions used of taxon occurrence/distribution
+CREATE TABLE regions (
+  code text PRIMARY KEY,
+  name text NOT NULL,
+  region_type text NOT NULL,
+  parent_code text
+    REFERENCES regions(code)
+    ON DELETE RESTRICT,
+  notes text,
+  CONSTRAINT chk_regions_type
+    CHECK (
+      region_type IN (
+        'continent',
+        'country',
+        'state',
+        'province',
+        'department',
+        'region',
+        'locality',
+        'other'
+      )
+    ),
+  CONSTRAINT chk_regions_not_self_parent
+    CHECK (parent_code IS NULL OR parent_code <> code)
+);
+
+-- index for recursive traversal of the geographic region hierarchy
+CREATE INDEX idx_regions_parent_code
+ON regions(parent_code);
+
+-- index for lookup of regions by name
+CREATE INDEX idx_regions_name
+ON regions(name);
