@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 03/27/2026
+// Updated: 03/29/2026
 
 
 Table items {
@@ -142,6 +142,19 @@ Table regions {
   // taxon occurrence/distribution.
 }
 
+Table taxon_regions {
+  taxon_id uuid
+  region_code text
+  occurrence_status text
+  notes text
+  
+  indexes {
+    (taxon_id, region_code) [pk]
+  }
+
+  // many-to-many relation between taxa and geographic regions where they occur
+}
+
 // Relationships
 
 Ref: coins.item_id > items.id
@@ -154,3 +167,5 @@ Ref: trading_card_players.player_id > players.id
 
 Ref: taxa.parent_id > taxa.id
 Ref: regions.parent_code > regions.code
+Ref: taxon_regions.taxon_id > taxa.id
+Ref: taxon_regions.region_code > regions.code

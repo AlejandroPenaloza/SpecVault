@@ -40,6 +40,7 @@ The current schema includes the following tables:
 - `taxa`
 - `specimens`
 - `regions`
+- `taxon_regions`
 
 ### Database Migrations and Schema
 
