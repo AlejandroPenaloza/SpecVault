@@ -794,3 +794,23 @@ CHECK (
 -- rename column region_type -> area_type
 ALTER TABLE regions
 RENAME COLUMN region_type TO area_type;
+
+
+-- 2026-04-03: rename table regions to distribution_areas, so that it represents 
+-- more accurately the geographical ranges of occurrence of specimens
+-- Also renaming corresponding indexes and constraint
+
+-- rename table regions to distribution_areas
+ALTER TABLE regions
+RENAME TO distribution_areas;
+
+-- rename indexes
+ALTER INDEX idx_regions_parent_code
+RENAME TO idx_dist_areas_parent_code;
+
+ALTER INDEX idx_regions_name
+RENAME TO idx_dist_areas_name;
+
+-- rename constraint within table
+ALTER TABLE distribution_areas
+RENAME CONSTRAINT chk_regions_not_self_parent TO chk_dist_areas_not_self_parent;

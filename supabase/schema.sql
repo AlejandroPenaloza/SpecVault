@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/29
+  Updated: 2026/04/03
 */
 
 
@@ -396,37 +396,39 @@ EXECUTE FUNCTION check_spec_taxon_rank();
 
 -- create table regions
 -- hierarchical geographic regions used of taxon occurrence/distribution
-CREATE TABLE regions (
+CREATE TABLE distribution_areas (
   code text PRIMARY KEY,
   name text NOT NULL,
-  region_type text NOT NULL,
+  area_type text NOT NULL,
   parent_code text
     REFERENCES regions(code)
     ON DELETE RESTRICT,
   notes text,
-  CONSTRAINT chk_regions_type
+  CONSTRAINT chk_area_type
     CHECK (
       region_type IN (
+        'hemisphere',
         'continent',
         'country',
         'state',
         'province',
         'department',
-        'region',
-        'locality',
+        'biogeographic_region',
+        'ecoregion',
+        'habitat_zone',
         'other'
       )
     ),
-  CONSTRAINT chk_regions_not_self_parent
+  CONSTRAINT chk_dist_areas_not_self_parent
     CHECK (parent_code IS NULL OR parent_code <> code)
 );
 
 -- index for recursive traversal of the geographic region hierarchy
-CREATE INDEX idx_regions_parent_code
+CREATE INDEX idx_dist_areas_parent_code
 ON regions(parent_code);
 
 -- index for lookup of regions by name
-CREATE INDEX idx_regions_name
+CREATE INDEX idx_dist_areas_name
 ON regions(name);
 
 
