@@ -401,12 +401,12 @@ CREATE TABLE distribution_areas (
   name text NOT NULL,
   area_type text NOT NULL,
   parent_code text
-    REFERENCES regions(code)
+    REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
   notes text,
   CONSTRAINT chk_area_type
     CHECK (
-      region_type IN (
+      area_type IN (
         'hemisphere',
         'continent',
         'country',
@@ -425,11 +425,11 @@ CREATE TABLE distribution_areas (
 
 -- index for recursive traversal of the geographic region hierarchy
 CREATE INDEX idx_dist_areas_parent_code
-ON regions(parent_code);
+ON distribution_areas(parent_code);
 
 -- index for lookup of regions by name
 CREATE INDEX idx_dist_areas_name
-ON regions(name);
+ON distribution_areas(name);
 
 
 -- create table taxon_regions
@@ -439,7 +439,7 @@ CREATE TABLE taxon_regions (
     REFERENCES taxa(id)
     ON DELETE CASCADE,
   region_code text NOT NULL
-    REFERENCES regions(code)
+    REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
   occurrence_status text
     CHECK (
