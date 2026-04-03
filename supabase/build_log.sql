@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/03/29
+  Updated: 2026/04/03
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -762,3 +762,35 @@ ON taxon_regions(region_code);
 -- index for lookup of taxon-region rows by taxon
 CREATE INDEX idx_taxon_regions_taxon_id
 ON taxon_regions(taxon_id);
+
+
+-- 2026-04-02: substitute constraint to check on options for the type of 
+-- geographical distribution area of specimens' occurrence, by dropping 
+-- chk_regions_type and adding chk_area_type
+-- Also, to update column regions.region_type to area_type
+
+-- drop old constraint
+ALTER TABLE regions
+DROP CONSTRAINT chk_regions_type;
+
+-- add new constraint
+ALTER TABLE regions
+ADD CONSTRAINT chk_area_type
+CHECK (
+  region_type IN (
+    'hemisphere',
+    'continent',
+    'country',
+    'state',
+    'province',
+    'department',
+    'biogeographic_region',
+    'ecoregion',
+    'habitat_zone',
+    'other'
+  )
+);
+
+-- rename column region_type -> area_type
+ALTER TABLE regions
+RENAME COLUMN region_type TO area_type;
