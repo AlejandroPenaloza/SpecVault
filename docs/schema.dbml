@@ -131,10 +131,10 @@ Table specimens {
   // Current project scope allows at most one specimen per represented species/subspecies.
 }
 
-Table regions {
+Table distribution_areas {
   code text [pk]
   name text
-  region_type text
+  area_type text
   parent_code text
   notes text
 

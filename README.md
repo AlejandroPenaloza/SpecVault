@@ -39,7 +39,7 @@ The current schema includes the following tables:
 - `trading_card_players`
 - `taxa`
 - `specimens`
-- `regions`
+- `distribution_areas`
 - `taxon_regions`
 
 ### Database Migrations and Schema
