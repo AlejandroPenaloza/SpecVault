@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/03
+  Updated: 2026/04/05
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -814,3 +814,23 @@ RENAME TO idx_dist_areas_name;
 -- rename constraint within table
 ALTER TABLE distribution_areas
 RENAME CONSTRAINT chk_regions_not_self_parent TO chk_dist_areas_not_self_parent;
+
+
+-- 2026-04-05: renamed table taxon_regions to taxon_dist_areas, so as 
+-- column regions_code to area_code and indexes idx_taxon_regions_region_code, 
+-- idx_taxon_regions_taxon_id to idx_taxon_dist_areas_area_code, idx_dist_areas_taxon_id respectively
+
+-- rename table
+ALTER TABLE taxon_regions
+RENAME TO taxon_dist_areas;
+
+-- rename to taxon_dist_areas.area_code
+ALTER TABLE taxon_dist_areas
+RENAME COLUMN region_code TO area_code;
+
+-- rename taxon_dist_areas indexes
+ALTER INDEX idx_taxon_regions_region_code
+RENAME TO idx_taxon_dist_areas_area_code;
+
+ALTER INDEX idx_taxon_regions_taxon_id
+RENAME TO idx_taxon_dist_areas_taxon_id;

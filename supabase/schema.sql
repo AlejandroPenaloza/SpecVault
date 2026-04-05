@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/03
+  Updated: 2026/04/05
 */
 
 
@@ -432,13 +432,14 @@ CREATE INDEX idx_dist_areas_name
 ON distribution_areas(name);
 
 
--- create table taxon_regions
--- many-to-many relation between taxa and geographic regions where they occur
-CREATE TABLE taxon_regions (
+-- create table taxon_dist_areas
+-- many-to-many relation between taxa and geographic distribution areas 
+-- where they occur
+CREATE TABLE taxon_dist_areas (
   taxon_id uuid NOT NULL
     REFERENCES taxa(id)
     ON DELETE CASCADE,
-  region_code text NOT NULL
+  area_code text NOT NULL
     REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
   occurrence_status text
@@ -452,13 +453,13 @@ CREATE TABLE taxon_regions (
       )
     ),
   notes text,
-  PRIMARY KEY (taxon_id, region_code)
+  PRIMARY KEY (taxon_id, area_code)
 );
 
--- index for lookup of taxon-region rows by region
-CREATE INDEX idx_taxon_regions_region_code
-ON taxon_regions(region_code);
+-- index for lookup of taxon-dist_area rows by region
+CREATE INDEX idx_taxon_dist_areas_area_code
+ON taxon_dist_areas(area_code);
 
--- index for lookup of taxon-region rows by taxon
-CREATE INDEX idx_taxon_regions_taxon_id
-ON taxon_regions(taxon_id);
+-- index for lookup of taxon-dist_area rows by taxon
+CREATE INDEX idx_taxon_dist_areas_taxon_id
+ON taxon_dist_areas(taxon_id);
