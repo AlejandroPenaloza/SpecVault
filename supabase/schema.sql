@@ -442,7 +442,9 @@ CREATE TABLE taxon_dist_areas (
   area_code text NOT NULL
     REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
+
   occurrence_status text
+  CONSTRAINT chk_taxon_dist_areas_occur_status
     CHECK (
       occurrence_status IS NULL OR occurrence_status IN (
         'present',
@@ -452,6 +454,7 @@ CREATE TABLE taxon_dist_areas (
         'uncertain'
       )
     ),
+    
   notes text,
   PRIMARY KEY (taxon_id, area_code)
 );

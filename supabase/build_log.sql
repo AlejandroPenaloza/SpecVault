@@ -816,7 +816,7 @@ ALTER TABLE distribution_areas
 RENAME CONSTRAINT chk_regions_not_self_parent TO chk_dist_areas_not_self_parent;
 
 
--- 2026-04-05: renamed table taxon_regions to taxon_dist_areas, so as 
+-- 2026-04-05: renamed table taxon_regions to taxon_dist_areas, unnamed constraint, so as 
 -- column regions_code to area_code and indexes idx_taxon_regions_region_code, 
 -- idx_taxon_regions_taxon_id to idx_taxon_dist_areas_area_code, idx_dist_areas_taxon_id respectively
 
@@ -834,3 +834,25 @@ RENAME TO idx_taxon_dist_areas_area_code;
 
 ALTER INDEX idx_taxon_regions_taxon_id
 RENAME TO idx_taxon_dist_areas_taxon_id;
+
+-- search for unnamed constraint within taxon_dist_areas definition. 
+-- the following query run in Supabase SQL Editor searches for its name. 
+SELECT
+  con.conname AS constraint_name,
+  rel.relname AS table_name,
+  pg_get_constraintdef(con.oid) AS definition
+FROM pg_constraint con
+JOIN pg_class rel
+  ON rel.oid = con.conrelid
+JOIN pg_namespace nsp
+  ON nsp.oid = rel.relnamespace
+-- just in case, use initial table and updated names
+WHERE rel.relname IN ('taxon_regions', 'taxon_dist_areas')
+  AND con.contype = 'c'
+ORDER BY rel.relname, con.conname;
+-- found name: taxon_regions_occurrence_status_check
+
+-- rename constraint to chk_taxon_dist_areas_occur_status
+ALTER TABLE taxon_dist_areas
+RENAME CONSTRAINT taxon_regions_occurrence_status_check 
+TO chk_taxon_dist_areas_occur_status;
