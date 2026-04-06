@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/05
+  Updated: 2026/04/06
 */
 
 
@@ -394,8 +394,8 @@ FOR EACH ROW
 EXECUTE FUNCTION check_spec_taxon_rank();
 
 
--- create table regions
--- hierarchical geographic regions used of taxon occurrence/distribution
+-- create table distribution_areas
+-- hierarchical geographic distribution areas used of taxon occurrence
 CREATE TABLE distribution_areas (
   code text PRIMARY KEY,
   name text NOT NULL,
@@ -404,7 +404,7 @@ CREATE TABLE distribution_areas (
     REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
   notes text,
-  CONSTRAINT chk_area_type
+  CONSTRAINT chk_dist_areas_area_type
     CHECK (
       area_type IN (
         'hemisphere',
@@ -423,11 +423,11 @@ CREATE TABLE distribution_areas (
     CHECK (parent_code IS NULL OR parent_code <> code)
 );
 
--- index for recursive traversal of the geographic region hierarchy
+-- index for recursive traversal of the geographic distribution area hierarchy
 CREATE INDEX idx_dist_areas_parent_code
 ON distribution_areas(parent_code);
 
--- index for lookup of regions by name
+-- index for lookup of distribution areas by name
 CREATE INDEX idx_dist_areas_name
 ON distribution_areas(name);
 

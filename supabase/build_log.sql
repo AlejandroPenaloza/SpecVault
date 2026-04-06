@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/05
+  Updated: 2026/04/06
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -856,3 +856,11 @@ ORDER BY rel.relname, con.conname;
 ALTER TABLE taxon_dist_areas
 RENAME CONSTRAINT taxon_regions_occurrence_status_check 
 TO chk_taxon_dist_areas_occur_status;
+
+
+-- 2026-04-06: rename constraint for distribution_areas.area_type.
+
+-- rename constraint
+ALTER TABLE distribution_areas
+RENAME CONSTRAINT chk_area_type
+TO chk_distribution_areas_area_type;
