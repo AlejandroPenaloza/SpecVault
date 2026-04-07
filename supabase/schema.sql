@@ -113,6 +113,7 @@ CREATE TABLE trading_cards (
   topic text NOT NULL,                           -- Sport, discipline, or other topic
   brand text,                                    -- Topps, Panini, Upper Deck
   set_name text,                                 -- Set or series name
+  serial_number text,                            -- Limited edition identifier -> specific copy and total production
   year integer CHECK (year >= 1800),             -- Card issue year
   card_number text,                              -- Alphanumeric
   condition text,                                -- NM, EX, PSA 9,...

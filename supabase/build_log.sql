@@ -858,9 +858,17 @@ RENAME CONSTRAINT taxon_regions_occurrence_status_check
 TO chk_taxon_dist_areas_occur_status;
 
 
--- 2026-04-06: rename constraint for distribution_areas.area_type.
+-- 2026-04-06: rename constraint for distribution_areas.area_type. 
+-- Also, to add new column trading_cards.serial_number, representing a limited edition identifier 
+-- indicating the specific copy and total production of the card.
 
 -- rename constraint
 ALTER TABLE distribution_areas
 RENAME CONSTRAINT chk_area_type
 TO chk_distribution_areas_area_type;
+
+
+-- add column serial_number
+-- limited edition identifier
+ALTER TABLE trading_cards
+ADD COLUMN serial_number text;
