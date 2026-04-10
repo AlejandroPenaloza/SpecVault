@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 04/07/2026
+// Updated: 04/10/2026
 
 
 Table items {
@@ -66,6 +66,7 @@ Table trading_cards {
   card_number text
   condition text
   is_autographed boolean
+  dimensions text
   notes text
 }
 
@@ -86,6 +87,10 @@ Table trading_card_players {
   team_name text
   jersey_number smallint
   position text
+
+  indexes {
+    (trading_card_id, player_id) [pk]
+  }
 }
 
 Table stamps {
@@ -150,6 +155,8 @@ Table taxon_dist_areas {
   
   indexes {
     (taxon_id, area_code) [pk]
+    area_code [name: 'idx_taxon_dist_areas_area_code']
+    taxon_id [name: 'idx_taxon_dist_areas_taxon_id']
   }
 
   // many-to-many relation between taxa and geographic distribution areas where they occur
