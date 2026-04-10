@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/06
+  Updated: 2026/04/10
 */
 
 
@@ -110,16 +110,22 @@ CREATE TABLE trading_cards (
   item_id uuid PRIMARY KEY
     REFERENCES items(id) ON DELETE CASCADE,
 
-  topic text NOT NULL,                           -- Sport, discipline, or other topic
-  brand text,                                    -- Topps, Panini, Upper Deck
-  set_name text,                                 -- Set or series name
-  serial_number text,                            -- Limited edition identifier -> specific copy and total production
-  year integer CHECK (year >= 1800),             -- Card issue year
-  card_number text,                              -- Alphanumeric
-  condition text,                                -- NM, EX, PSA 9,...
-  is_autographed boolean NOT NULL DEFAULT false, -- Whether marker autograph on card
+  topic text NOT NULL,                            -- Sport, discipline, or other topic
+  brand text,                                     -- Topps, Panini, Upper Deck
+  set_name text,                                  -- Set or series name
+  serial_number text,                             -- Limited edition identifier -> specific copy and total production
+  year integer CHECK (year >= 1800),              -- Card issue year
+  card_number text,                               -- Alphanumeric
+  condition text,                                 -- NM, EX, PSA 9,...
+  is_autographed boolean NOT NULL DEFAULT false,  -- Whether marker autograph on card
   
-  notes text
+  dimensions text NOT NULL DEFAULT '2.5" x 3.5"', -- Card dimensions: width x height in " or mm
+  notes text,
+
+  CONSTRAINT chk_trading_cards_dimensions_format
+  CHECK (
+    dimensions ~ '^[0-9]+(\.[0-9]+)?(\"| mm) x [0-9]+(\.[0-9]+)?(\"| mm)$'
+  )
 );
 
 

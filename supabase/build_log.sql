@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/06
+  Updated: 2026/04/10
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -872,3 +872,18 @@ TO chk_distribution_areas_area_type;
 -- limited edition identifier
 ALTER TABLE trading_cards
 ADD COLUMN serial_number text;
+
+
+-- 2026-04-10: add column dimensions to trading_cards, to store cards size.
+
+-- create column dimensions
+ALTER TABLE trading_cards
+ADD COLUMN dimensions text NOT NULL DEFAULT '2.5" x 3.5"';
+
+-- create constraint to enforce format
+ALTER TABLE trading_cards
+ADD CONSTRAINT chk_trading_cards_dimensions_format
+CHECK (
+  -- allows width x height with usage of "" or mm
+  dimensions ~ '^[0-9]+(\.[0-9]+)?(\"| mm) x [0-9]+(\.[0-9]+)?(\"| mm)$'
+);
