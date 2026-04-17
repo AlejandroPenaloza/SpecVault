@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/10
+  Updated: 2026/04/16
 */
 
 
@@ -238,6 +238,7 @@ CREATE TABLE taxa (
   CONSTRAINT chk_taxa_rank
     CHECK (
       rank IN (
+        'superfamily',
         'family',
         'subfamily',
         'tribe',
@@ -257,7 +258,7 @@ CREATE INDEX idx_taxa_parent_id
 ON taxa(parent_id);
 
 -- Validate taxa hierarchy by enforcing allowed parent-child rank combinations.
--- Ensures family is root-only and lower ranks attach only to valid parent ranks.
+-- Ensures superfamily is root-only and lower ranks attach only to valid parent ranks.
 CREATE OR REPLACE FUNCTION validate_parent_child_rank()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -265,11 +266,11 @@ AS $$
 DECLARE
   parent_rank text;
 BEGIN
-  -- family must not have a parent
-  IF NEW.rank = 'family' THEN
+  -- superfamily must not have a parent
+  IF NEW.rank = 'superfamily' THEN
     IF NEW.parent_id IS NOT NULL THEN
       RAISE EXCEPTION
-        'Taxon with rank "family" cannot have a parent';
+        'Taxon with rank "superfamily" cannot have a parent';
     END IF;
 
     RETURN NEW;
@@ -294,9 +295,13 @@ BEGIN
   WHERE t.id = NEW.parent_id;
 
   -- validate allowed parent-child combinations
-  IF NEW.rank = 'subfamily' AND parent_rank <> 'family' THEN
+  IF NEW.rank = 'family' AND parent_rank <> 'superfamily' THEN
     RAISE EXCEPTION
-      'Invalid parent rank: subfamily must have parent rank family, got %', parent_rank;
+      'Invalid parent rank: family must have parent rank superfamily, got %', parent_rank;
+
+  ELSIF NEW.rank = 'subfamily' AND parent_rank NOT IN ('superfamily', 'family') THEN
+    RAISE EXCEPTION
+      'Invalid parent rank: subfamily must have parent rank superfamily or family, got %', parent_rank;
 
   ELSIF NEW.rank = 'tribe' AND parent_rank NOT IN ('family', 'subfamily') THEN
     RAISE EXCEPTION
