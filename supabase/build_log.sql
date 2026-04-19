@@ -990,3 +990,104 @@ BEFORE INSERT OR UPDATE OF rank, parent_id
 ON taxa
 FOR EACH ROW
 EXECUTE FUNCTION validate_parent_child_rank();
+
+-- 2026-04-18: inserted single demo specimen ('Consul fabius') for subcollection Lepidoptera.
+-- Updated specimen color approach by splitting it into dorsal, ventral colors.
+
+-- inserting in taxa
+BEGIN;
+
+WITH new_species AS (
+  INSERT INTO taxa (
+    tax_name,
+    rank,
+    parent_id,
+    authority,
+    type_locality,
+    notes
+  )
+  SELECT
+    'fabius',
+    'species',
+    t.id,
+    'Fabricius, 1775',
+    'Peru',
+    'Obtained as genus Anaea (junior synonym).'
+  FROM taxa t
+  WHERE t.tax_name = 'Consul'
+    AND t.rank = 'genus'
+  RETURNING id
+),
+-- inserting in items
+new_item AS (
+  INSERT INTO items (
+    name,
+    description,
+    acquired_date,
+    subcollection,
+    acquisition_cost,
+    obtained_from
+  )
+  VALUES (
+    'Consul fabius specimen',
+    'Lepidoptera specimen',
+    DATE '2025-08-17',
+    'lepidoptera',
+    6.47,
+    'BicBugs'
+  )
+  RETURNING id
+),
+-- inserting in specimens
+new_specimen AS (
+  INSERT INTO specimens (
+    item_id,
+    taxon_id,
+    sex,
+    notes
+  )
+  SELECT
+    ni.id,
+    ns.id,
+    'unknown',
+    'Obtained as genus Anaea (junior synonym).'
+  FROM new_item ni
+  CROSS JOIN new_species ns
+  RETURNING taxon_id
+)
+-- inserting in taxon_dist_areas
+INSERT INTO taxon_dist_areas (
+  taxon_id,
+  area_code,
+  occurrence_status
+)
+SELECT
+  taxon_id,
+  'NEO',
+  'present'
+FROM new_specimen;
+
+COMMIT;
+
+-- create columns dorsal_main_color, ventral_main_color
+ALTER TABLE specimens
+ADD COLUMN dorsal_main_color text,
+ADD COLUMN ventral_main_color text;
+
+-- no data yet in column, so main_color is dropped
+ALTER TABLE specimens
+DROP COLUMN main_color;
+
+-- update new dorsal_main_color, ventral_main_color
+UPDATE specimens s
+SET
+  dorsal_main_color = 'red',
+  ventral_main_color = 'brown'
+FROM taxa species
+JOIN taxa genus
+  ON species.parent_id = genus.id
+WHERE s.taxon_id = species.id
+  AND species.tax_name = 'fabius'
+  AND species.rank = 'species'
+  AND genus.tax_name = 'Consul'
+  AND genus.rank = 'genus';
