@@ -3,7 +3,7 @@
   File: seed.sql
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/17
+  Updated: 2026/04/18
 
   Purpose:
   Insert representative sample data for development
@@ -357,5 +357,87 @@ INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
 SELECT 'Phoebis', 'genus', id, 'Hübner, 1819', 'Seed taxonomy row'
 FROM taxa
 WHERE tax_name = 'Coliadini' AND rank = 'tribe';
+
+COMMIT;
+
+
+-- 2026-04-18: inserted single demo specimen ('Consul fabius') for subcollection Lepidoptera.
+
+-- inserting in taxa
+BEGIN;
+
+WITH new_species AS (
+  INSERT INTO taxa (
+    tax_name,
+    rank,
+    parent_id,
+    authority,
+    type_locality,
+    notes
+  )
+  SELECT
+    'fabius',
+    'species',
+    t.id,
+    'Fabricius, 1775',
+    'Peru',
+    'Obtained as genus Anaea (junior synonym).'
+  FROM taxa t
+  WHERE t.tax_name = 'Consul'
+    AND t.rank = 'genus'
+  RETURNING id
+),
+-- inserting in items
+new_item AS (
+  INSERT INTO items (
+    name,
+    description,
+    acquired_date,
+    subcollection,
+    acquisition_cost,
+    obtained_from
+  )
+  VALUES (
+    'Consul fabius specimen',
+    'Lepidoptera specimen',
+    DATE '2025-08-17',
+    'lepidoptera',
+    6.47,
+    'BicBugs'
+  )
+  RETURNING id
+),
+-- inserting in specimens
+new_specimen AS (
+  INSERT INTO specimens (
+    item_id,
+    taxon_id,
+    sex,
+    dorsal_main_color,
+    ventral_main_color,
+    notes
+  )
+  SELECT
+    ni.id,
+    ns.id,
+    'unknown',
+    'red',
+    'brown',
+    'Obtained as genus Anaea (junior synonym).'
+  FROM new_item ni
+  CROSS JOIN new_species ns
+  RETURNING taxon_id
+)
+-- inserting in taxon_dist_areas
+INSERT INTO taxon_dist_areas (
+  taxon_id,
+  area_code,
+  occurrence_status
+)
+SELECT
+  taxon_id,
+  'NEO',
+  'present'
+FROM new_specimen;
 
 COMMIT;
