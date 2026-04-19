@@ -358,10 +358,10 @@ CREATE TABLE specimens (
   ),
 
   wingspan_mm numeric(5,2)
-    CHECK (wingspan_mm IS NULL OR wingspan_mm > 0),
+    CHECK (wingspan_mm IS NULL OR wingspan_mm > 0),  -- Wingspan size in milimeters
 
-  dorsal_main_color text,
-  ventral_main_color,
+  dorsal_main_color text,                            -- Dominant color on dorsal side
+  ventral_main_color text,                           -- Dominant color on ventral side
   notes text,
 
   CONSTRAINT uq_specimens_taxon_id

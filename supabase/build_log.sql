@@ -492,6 +492,63 @@ ALTER TABLE stamps
 RENAME COLUMN color TO main_color;
 
 
+-- Insert another demo item record
+-- single transaction using common table expression 
+-- and returning result (generated id)
+BEGIN;
+
+WITH new_item AS (
+  INSERT INTO items (
+    name, acquired_date, subcollection, theme, obtained_from
+  )
+  VALUES (
+    '3 Cents USA Stamp 1952',
+    '2022-05-30',
+    'stamps',
+    'USA',
+    'Mount Rushmore National Memorial gift shop; Keystone, SD'
+  )
+  RETURNING id
+)
+INSERT INTO stamps (
+  item_id,
+  country,
+  issue_year,
+  issue_date,
+  denomination_text,
+  currency,
+  stamp_type,
+  format,
+  perforation,
+  printing_method,
+  main_color,
+  condition,
+  catalog_system,
+  catalog_number,
+  notes
+)
+SELECT
+  id,
+  'USA',
+  1952,
+  '1952-08-11',
+  '3 cents',
+  'USD',
+  'commemorative',
+  'single',
+  '10 1/2 x 11',
+  'rotary press',
+  'green',
+  'Mint',
+  'Scott',
+  'US1011',
+  'Commemorates the 25th anniversary of the Mount Rushmore National Memorial. 
+    Obtained there during road trip to South Dakota.'
+FROM new_item;
+
+COMMIT;
+
+
 -- 2026-03-04: create table taxa to be included in representation of 
 -- subcollection lepidoptera
 
@@ -990,6 +1047,145 @@ BEFORE INSERT OR UPDATE OF rank, parent_id
 ON taxa
 FOR EACH ROW
 EXECUTE FUNCTION validate_parent_child_rank();
+
+
+-- 2026-04-17: first insert of data for subcollection Lepidoptera, by using two transactions.
+-- The first one adds the distribution area (only one) into distribution_areas and the taxa into taxa
+
+BEGIN;
+
+-- Distribution area insert
+INSERT INTO distribution_areas (
+  code,
+  name,
+  area_type,
+  parent_code,
+  notes
+)
+VALUES (
+  'NEO',
+  'Neotropical realm',
+  'biogeographic_region',
+  NULL,
+  'Seed distribution area for Lepidoptera specimen data'
+);
+
+-- Superfamily
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+VALUES
+  ('Papilionoidea', 'superfamily', NULL, 'Latreille, 1802', 'Seed taxonomy row');
+
+-- Families
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Nymphalidae', 'family', id, 'Rafinesque, 1815', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Papilionoidea' AND rank = 'superfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Pieridae', 'family', id, 'Swainson, 1820', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Papilionoidea' AND rank = 'superfamily';
+
+-- Subfamilies
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Charaxinae', 'subfamily', id, 'Doherty, 1886', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalidae' AND rank = 'family';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Cyrestinae', 'subfamily', id, 'Guenée, 1865', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalidae' AND rank = 'family';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Nymphalinae', 'subfamily', id, 'Swainson, 1827', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalidae' AND rank = 'family';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Morphinae', 'subfamily', id, 'Newman, 1834', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalidae' AND rank = 'family';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Heliconiinae', 'subfamily', id, 'Swainson, 1822', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalidae' AND rank = 'family';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Coliadinae', 'subfamily', id, 'Swainson, 1827', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Pieridae' AND rank = 'family';
+
+-- Tribes
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Anaeini', 'tribe', id, 'Reuter, 1896', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Charaxinae' AND rank = 'subfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Cyrestini', 'tribe', id, 'Guenée, 1865', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Cyrestinae' AND rank = 'subfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Coeini', 'tribe', id, 'Scudder, 1893', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Nymphalinae' AND rank = 'subfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Brassolini', 'tribe', id, 'Boisduval, 1836', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Morphinae' AND rank = 'subfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Heliconiini', 'tribe', id, 'Swainson, 1822', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Heliconiinae' AND rank = 'subfamily';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Coliadini', 'tribe', id, 'Swainson, 1821', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Coliadinae' AND rank = 'subfamily';
+
+-- Genera
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Consul', 'genus', id, 'Hübner, 1807', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Anaeini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Memphis', 'genus', id, 'Hübner, 1819', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Anaeini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Marpesia', 'genus', id, 'Hübner, 1818', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Cyrestini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Smyrna', 'genus', id, 'Hübner, 1823', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Coeini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Caligo', 'genus', id, 'Hübner, 1819', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Brassolini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Heliconius', 'genus', id, 'Kluk, 1780', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Heliconiini' AND rank = 'tribe';
+
+INSERT INTO taxa (tax_name, rank, parent_id, authority, notes)
+SELECT 'Phoebis', 'genus', id, 'Hübner, 1819', 'Seed taxonomy row'
+FROM taxa
+WHERE tax_name = 'Coliadini' AND rank = 'tribe';
+
+COMMIT;
+
 
 -- 2026-04-18: inserted single demo specimen ('Consul fabius') for subcollection Lepidoptera.
 -- Updated specimen color approach by splitting it into dorsal, ventral colors.
