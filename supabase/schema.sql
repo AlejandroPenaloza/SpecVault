@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/16
+  Updated: 2026/04/18
 */
 
 
@@ -360,7 +360,8 @@ CREATE TABLE specimens (
   wingspan_mm numeric(5,2)
     CHECK (wingspan_mm IS NULL OR wingspan_mm > 0),
 
-  main_color text,
+  dorsal_main_color text,
+  ventral_main_color,
   notes text,
 
   CONSTRAINT uq_specimens_taxon_id
