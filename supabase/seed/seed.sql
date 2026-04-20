@@ -3,7 +3,7 @@
   File: seed.sql
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/18
+  Updated: 2026/04/19
 
   Purpose:
   Insert representative sample data for development
@@ -366,6 +366,7 @@ COMMIT;
 -- inserting in taxa
 BEGIN;
 
+-- inserting in taxa
 WITH new_species AS (
   INSERT INTO taxa (
     tax_name,
@@ -437,6 +438,87 @@ INSERT INTO taxon_dist_areas (
 SELECT
   taxon_id,
   'NEO',
+  'present'
+FROM new_specimen;
+
+COMMIT;
+
+
+-- 2026-04-19: inserted single demo specimen ('Memphis clytemnestra') for subcollection Lepidoptera.
+
+BEGIN;
+
+-- inserting in taxa
+WITH new_species AS (
+  INSERT INTO taxa (
+    tax_name,
+    rank,
+    parent_id,
+    authority,
+    type_locality,
+    notes
+  )
+  SELECT
+    'clytemnestra',
+    'species',
+    t.id,
+    'Cramer, 1777',
+    'Peru',
+    'Obtained as genus Anaea (junior synonym).'
+  FROM taxa t
+  WHERE t.tax_name = 'Memphis'
+    AND t.rank = 'genus'
+  RETURNING id
+),
+-- inserting in items
+new_item AS (
+  INSERT INTO items (
+    name, 
+    description, 
+    acquired_date, 
+    subcollection,
+    acquisition_cost, 
+    obtained_from
+  )
+  VALUES (
+    'Memphis clytemnestra specimen',
+    'Lepidoptera specimen',
+    DATE '2025-08-17',
+    'lepidoptera',
+    6.47,
+    'BicBugs'
+  )
+  RETURNING id
+),
+-- inserting in specimens
+new_specimen AS (
+  INSERT INTO specimens (
+    item_id, 
+    taxon_id, 
+    sex,
+    dorsal_main_color, 
+    ventral_main_color,
+    notes)
+  SELECT 
+    ni.id, 
+    ns.id, 
+    'unknown',
+    'brown', 
+    'brown', 
+    'Obtained as genus Anaea (junior synonym).'
+  FROM new_item ni
+  CROSS JOIN new_species ns
+  RETURNING taxon_id
+)
+-- inserting in taxon_dist_areas
+INSERT INTO taxon_dist_areas (
+  taxon_id, 
+  area_code, 
+  occurrence_status, 
+)
+SELECT 
+  taxon_id, 
+  'NEO', 
   'present'
 FROM new_specimen;
 
