@@ -23,6 +23,6 @@ jobs:
       - name: Execute Ping
         env:
           # connects Vault Secrets to Python script
-          SUPABASE_URL: ${{ secrets.SUPABASE_SPECVAULT_DATA_API_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SPECVAULT_SRKEY }}
+          SUPABASE_SPECVAULT_DATA_API_URL: ${{ secrets.SUPABASE_SPECVAULT_DATA_API_URL }}
+          SUPABASE_SPECVAULT_SRKEY: ${{ secrets.SUPABASE_SPECVAULT_SRKEY }}
         run: python db_heartbeat.py
