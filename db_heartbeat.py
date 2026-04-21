@@ -15,7 +15,7 @@ def heartbeat():
         supabase = create_client(url, key)
         
         # triggers a request to supabase project Auth service
-        # built-in path that transfer almost no data
+        # built-in path that transfers almost no data
         supabase.auth.get_session()
 
         print("Success: heartbeat for SpecVault")
