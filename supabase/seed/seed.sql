@@ -3,7 +3,7 @@
   File: seed.sql
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/19
+  Updated: 2026/04/20
 
   Purpose:
   Insert representative sample data for development
