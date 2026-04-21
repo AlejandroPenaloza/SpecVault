@@ -13,3 +13,12 @@ Thumbs.db
 
 # Supabase local state
 supabase/.temp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/

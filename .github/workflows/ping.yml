@@ -1,0 +1,28 @@
+name: Supabase Database Heartbeat
+
+on:
+  schedule:
+    - cron: "0 0 * * 1,4" # runs at midnight every Monday and Thursday
+  workflow_dispatch: # allows to click a button to test
+
+jobs:
+  ping_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Supabase Library
+        run: pip install supabase
+
+      - name: Execute Ping
+        env:
+          # connects Vault Secrets to Python script
+          SUPABASE_URL: ${{ secrets.SUPABASE_SPECVAULT_DATA_API_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SPECVAULT_SRKEY }}
+        run: python db_heartbeat.py
