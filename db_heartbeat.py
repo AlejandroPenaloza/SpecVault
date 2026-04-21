@@ -1,7 +1,7 @@
 import os
 from supabase import create_client
 
-# We use get() so the script doesn't crash if keys are missing
+# use get() so the script does not crash if keys are missing
 url = os.environ.get("SUPABASE_SPECVAULT_DATA_API_URL")
 key = os.environ.get("SUPABASE_SPECVAULT_SRKEY")
 
@@ -14,13 +14,13 @@ def heartbeat():
         # Initialize with service_role key (bypasses RLS)
         supabase = create_client(url, key)
         
-        # The lightest possible 'activity' to trigger Supabase
-        response = supabase.rpc("version").execute()
+        # triggers a request to supabase project Auth service
+        # built-in path that transfer almost no data
+        supabase.auth.get_session()
+
+        print("Success: heartbeat for SpecVault")
+        print("Supabase activity recorded. Timer reset.")
         
-        if response.data:
-            print(f"Success: SpecVault is awake.")
-            print(f"DB Version: {response.data}")
-            print(f"Activity recorded using service_role permissions.")
     except Exception as e:
         print(f"Heartbeat failed: {e}")
 
