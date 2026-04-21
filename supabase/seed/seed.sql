@@ -514,7 +514,7 @@ new_specimen AS (
 INSERT INTO taxon_dist_areas (
   taxon_id, 
   area_code, 
-  occurrence_status, 
+  occurrence_status
 )
 SELECT 
   taxon_id, 
