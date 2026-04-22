@@ -19,7 +19,7 @@ scientific memorabilia.
 - **Frontend:** Flutter (desktop)
 - **Backend:** Supabase (PostgreSQL)
 - **Database:** PostgreSQL (SQL, migrations, constraints)
-- **Other:** Python (data seeding utilities, planned)
+- **Other:** Python (data seeding utilities, planned, automation)
 
 ---
 
@@ -30,7 +30,7 @@ Each subcollection maintains a 1-to-1 relationship with `items`.
 Complex many-to-many relationships (e.g. trading cards ↔ players)
 are handled via junction tables.
 
-The current schema includes the following tables:
+The current schema includes the other following tables:
 
 - `coins`
 - `banknotes`
@@ -110,7 +110,7 @@ cp .env.example .env
 ```
 
 Then fill in your Supabase project URL and public client key.
-Do not commit your real .env file to the repository.
+Do not commit real .env file to repository.
 
 ---
 
