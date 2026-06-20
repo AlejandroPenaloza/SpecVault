@@ -11,16 +11,16 @@ def heartbeat():
         return
 
     try:
-        # Initialize with service_role key (bypasses RLS)
+        # initialize with service_role key (bypasses RLS)
         supabase = create_client(url, key)
         
-        # triggers a request to supabase project Auth service
-        # built-in path that transfers almost no data
-        supabase.auth.get_session()
+        # query table 'items' to trigger Data API traffic and reset the pause timer
+        # even if the table is empty, this interaction keeps the project alive.
+        supabase.table("items").select("id").limit(1).execute()
 
         print("Success: heartbeat for SpecVault")
-        print("Supabase activity recorded. Timer reset.")
-        
+        print("Supabase database activity recorded. Timer reset.")
+
     except Exception as e:
         print(f"Heartbeat failed: {e}")
 
