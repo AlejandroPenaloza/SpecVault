@@ -7,10 +7,10 @@ key = os.environ.get("SUPABASE_SPECVAULT_SRKEY")
 
 def heartbeat():
     if not url or not key:
-        raise RunTimeError("SUPABASE_SPECVAULT_DATA_API_URL not found")
+        raise RuntimeError("SUPABASE_SPECVAULT_DATA_API_URL not found")
 
     if not key:
-        raise RunTimeError("SUPABASE_SPECVAULT_SRKEY not found")
+        raise RuntimeError("SUPABASE_SPECVAULT_SRKEY not found")
     
     print(f"Using URL: {url}")
 
