@@ -7,22 +7,31 @@ key = os.environ.get("SUPABASE_SPECVAULT_SRKEY")
 
 def heartbeat():
     if not url or not key:
-        print("Error: Secrets not found in environment.")
-        return
+        raise RunTimeError("SUPABASE_SPECVAULT_DATA_API_URL not found")
+
+    if not key:
+        raise RunTimeError("SUPABASE_SPECVAULT_SRKEY not found")
+    
+    print(f"Using URL: {url}")
 
     try:
         # initialize with service_role key (bypasses RLS)
         supabase = create_client(url, key)
         
-        # query table 'items' to trigger Data API traffic and reset the pause timer
-        # even if the table is empty, this interaction keeps the project alive.
-        supabase.table("items").select("id").limit(1).execute()
+        response = (
+            supabase
+            .table("items")
+            .select("id")
+            .limit(1)
+            .execute()
+        )
 
-        print("Success: heartbeat for SpecVault")
-        print("Supabase database activity recorded. Timer reset.")
+        print("Success: heartbeat query executed")
 
     except Exception as e:
-        print(f"Heartbeat failed: {e}")
+        print(type(e).__name__)
+        print(e)
+        raise
 
 if __name__ == "__main__":
     heartbeat()
