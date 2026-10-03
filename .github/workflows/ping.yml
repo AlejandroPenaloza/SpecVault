@@ -2,7 +2,7 @@ name: Supabase Database Heartbeat
 
 on:
   schedule:
-    - cron: "0 0 * * 1,4" # runs at midnight every Monday and Thursday
+    - cron: "0 0 * * *" # runs once every day at midnight UTC
   workflow_dispatch: # allows to click a button to test
 
 jobs:
