@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 04/18/2026
+// Updated: 10/23/2026
 
 
 Table items {
@@ -70,7 +70,7 @@ Table trading_cards {
   notes text
 }
 
-Table players {
+Table card_subjects {
   id uuid [pk]
   first_name text
   last_name text
@@ -80,16 +80,16 @@ Table players {
   notes text
 }
 
-Table trading_card_players {
+Table subject_appearances {
   trading_card_id uuid
-  player_id uuid
-  player_order smallint
+  subject_id uuid
+  subject_order smallint
   team_name text
   jersey_number smallint
   position text
 
   indexes {
-    (trading_card_id, player_id) [pk]
+    (trading_card_id, subject_id) [pk]
   }
 }
 
@@ -170,8 +170,8 @@ Ref: banknotes.item_id > items.id
 Ref: trading_cards.item_id > items.id
 Ref: stamps.item_id > items.id
 
-Ref: trading_card_players.trading_card_id > trading_cards.item_id
-Ref: trading_card_players.player_id > players.id
+Ref: subject_appearances.trading_card_id > trading_cards.item_id
+Ref: subject_appearances.subject_id > card_subjects.id
 
 Ref: taxa.parent_id > taxa.id
 Ref: distribution_areas.parent_code > distribution_areas.code

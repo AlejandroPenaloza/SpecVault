@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/18
+  Updated: 2026/10/23
 */
 
 
@@ -130,7 +130,7 @@ CREATE TABLE trading_cards (
 
 
 -- create table players
-CREATE TABLE players (
+CREATE TABLE card_subjects (
   id uuid PRIMARY KEY
     DEFAULT uuid_generate_v4(),
 
@@ -157,25 +157,25 @@ CREATE TABLE players (
 
 
 -- create junction table trading_card_players
-CREATE TABLE trading_card_players (
+CREATE TABLE subject_appearances (
   trading_card_id uuid
     REFERENCES trading_cards(item_id) ON DELETE CASCADE,
 
-  player_id uuid
-    REFERENCES players(id) ON DELETE CASCADE,
+  subject_id uuid
+    REFERENCES card_subjects(id) ON DELETE CASCADE,
 
-  player_order smallint NOT NULL,       -- Position/order on the card (1–3)
+  subject_order smallint NOT NULL,       -- Position/order on the card (1–3)
   team_name text,                       -- Team shown for this player on this card
   jersey_number smallint,               -- Jersey number shown on this card
   position text,                        -- Card-specific playing position
 
-  PRIMARY KEY (trading_card_id, player_id),
+  PRIMARY KEY (trading_card_id, subject_id),
 
   CONSTRAINT uq_trading_card_player_order
-    UNIQUE (trading_card_id, player_order),
+    UNIQUE (trading_card_id, subject_order),
 
   CONSTRAINT chk_player_order_range
-    CHECK (player_order BETWEEN 1 AND 3),
+    CHECK (subject_order BETWEEN 1 AND 3),
 
   CONSTRAINT chk_player_jersey_number_range
     CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99),

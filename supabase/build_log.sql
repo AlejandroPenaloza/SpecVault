@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/04/20
+  Updated: 2026/10/23
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -1368,3 +1368,25 @@ SELECT
 FROM new_specimen;
 
 COMMIT;
+
+
+-- 2026-10-23: Rename trading card player tables and columns
+-- Generalize table and relationship names to support card subjects
+-- beyond athletes, including teams and other personalities.
+-- Structural renaming only; existing attributes and constraints remain unchanged.
+
+-- rename players to card_subjects
+ALTER TABLE players
+RENAME TO card_subjects;
+
+-- rename trading_card_players to subject_appearances
+ALTER TABLE trading_card_players
+RENAME TO subject_appearances;
+
+-- rename player_id to subject_id
+ALTER TABLE subject_appearances
+RENAME COLUMN player_id TO subject_id;
+
+-- rename player_order to subject_order
+ALTER TABLE subject_appearances
+RENAME COLUMN player_order TO subject_order;
