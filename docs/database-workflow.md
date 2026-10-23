@@ -126,4 +126,4 @@ Review staged files before committing. Confirm that private seed files, real col
 
 ## Related documentation
 
-- [Project README](https://github.com/AlejandroPenaloza/SpecVault/README.md)
+- [Project README](https://github.com/AlejandroPenaloza/SpecVault/blob/main/README.md)
