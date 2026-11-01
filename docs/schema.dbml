@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 10/23/2026
+// Updated: 11/01/2026
 
 
 Table items {
@@ -18,7 +18,9 @@ Table items {
   theme text
   acquisition_cost numeric
   acquisition_currency char(3)
+  acquisition_format text
   obtained_from text
+  is_autographed boolean [not null, default: false]
 }
 
 Table coins {
@@ -70,27 +72,40 @@ Table trading_cards {
   notes text
 }
 
+// Renamed from players in migration 043.
 Table card_subjects {
   id uuid [pk]
-  first_name text
-  last_name text
+  first_name text [not null]
+  last_name text [not null]
   nationality char(2)
   birth_year integer
   primary_position text
   notes text
+
+  // CHECK constraints (renamed in migration 044):
+  // chk_card_subjects_birth_year_range
+  // chk_card_subjects_nationality_format
+  // chk_card_subjects_prim_pos_format
 }
 
+// Renamed from trading_card_players in migration 043.
 Table subject_appearances {
-  trading_card_id uuid
-  subject_id uuid
-  subject_order smallint
+  trading_card_id uuid [not null]
+  subject_id uuid [not null]
+  subject_order smallint [not null]
   team_name text
   jersey_number smallint
   position text
 
   indexes {
-    (trading_card_id, subject_id) [pk]
+    (trading_card_id, subject_id) [pk, name: 'subject_appearances_pkey']
+    (trading_card_id, subject_order) [unique, name: 'uq_subject_appearance_order']
   }
+
+  // CHECK constraints (renamed in migration 044):
+  // chk_subject_order_range
+  // chk_subject_jersey_number_range
+  // chk_subject_appearances_position_format
 }
 
 Table stamps {

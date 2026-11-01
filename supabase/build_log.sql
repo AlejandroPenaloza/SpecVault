@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/10/31
+  Updated: 2026/11/01
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -1601,3 +1601,24 @@ LEFT JOIN pg_constraint c
   ON c.conindid = i.indexrelid
   AND c.conrelid = i.indrelid
 ORDER BY e.table_name, e.index_name;
+
+
+
+-- 2026-11-01: To add columns acquisition_format and is_autographed to table items.
+
+-- add shared acquisition and autograph attributes to items
+ALTER TABLE items
+  ADD COLUMN acquisition_format text,
+  ADD COLUMN is_autographed boolean NOT NULL DEFAULT false;
+
+-- query to verify the columns set up
+SELECT
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND table_name = 'items'
+  AND column_name IN ('acquisition_format', 'is_autographed')
+ORDER BY ordinal_position;

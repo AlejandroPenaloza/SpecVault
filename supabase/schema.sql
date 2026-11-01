@@ -34,7 +34,10 @@ create table items (
     CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0),
   acquisition_currency char(3) DEFAULT 'USD' 
     CHECK (acquisition_currency ~ '^[A-Z]{3}$'), 
+  acquisition_format text
   obtained_from text
+
+  is_autographed boolean NOT NULL DEFAULT false
 );
 
 -- index of subcollection in items
