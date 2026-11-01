@@ -14,7 +14,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/10/23
+  Updated: 2026/10/31
 */
 -- DO NOT RUN IN PRODUCTION
 
@@ -1390,3 +1390,214 @@ RENAME COLUMN player_id TO subject_id;
 -- rename player_order to subject_order
 ALTER TABLE subject_appearances
 RENAME COLUMN player_order TO subject_order;
+
+
+
+/*
+  2026-10-24: Migration 043 renamed:
+      players              -> card_subjects
+      trading_card_players -> subject_appearances
+      player_id            -> subject_id
+      player_order         -> subject_order
+
+      It is investigated the naming of indexes and constraints 
+      regarding tables card_subjects and subject_appearances.
+*/
+
+-- Query to retrieve all constraints referring card_subjects and subject_appearances
+SELECT
+    conrelid::regclass AS table_name,
+    conname AS constraint_name,
+    CASE contype
+        WHEN 'p' THEN 'PRIMARY KEY'
+        WHEN 'f' THEN 'FOREIGN KEY'
+        WHEN 'u' THEN 'UNIQUE'
+        WHEN 'c' THEN 'CHECK'
+        WHEN 'x' THEN 'EXCLUSION'
+        ELSE contype::text
+    END AS constraint_type,
+    pg_get_constraintdef(oid) AS definition
+FROM pg_constraint
+WHERE conrelid IN (
+    'public.card_subjects'::regclass,
+    'public.subject_appearances'::regclass
+)
+ORDER BY table_name, constraint_type, constraint_name;
+
+-- query to retrieve indexes in card_subjects, subject_appearances
+SELECT
+    tablename AS table_name,
+    indexname AS index_name,
+    indexdef AS definition
+FROM pg_indexes
+WHERE schemaname = 'public'
+  AND tablename IN (
+      'card_subjects',
+      'subject_appearances'
+  )
+ORDER BY tablename, indexname;
+
+/*
+  2026-10-31: 
+  PostgreSQL preserved the existing constraints and indexes,
+  including their original names.
+
+  Investigation:
+  Queried pg_constraint to inspect constraint names, types,
+  and definitions, including constraints originally defined
+  without explicit names.
+
+  Queried pg_indexes to inspect indexes associated with the
+  renamed tables.
+
+  Findings:
+    - 11 constraints retained outdated terminology.
+    - PostgreSQL assigns names to unnamed constraints.
+    - Three indexes support PRIMARY KEY or UNIQUE constraints.
+    - Renaming these constraints automatically renames their
+      supporting indexes.
+    - No standalone indexes require separate renaming.
+
+  Decision:
+    Rename all 11 outdated constraints in migration 044.
+    Explicitly declare their final names in schema.sql to
+    reproduce the intended database structure and naming.
+    No changes to constraint definitions or stored data.
+*/
+
+-- renaming constraints for consistency
+-- for table card_subjects
+ALTER TABLE card_subjects
+RENAME CONSTRAINT chk_players_birth_year_range
+TO chk_card_subjects_birth_year_range;
+
+ALTER TABLE card_subjects
+RENAME CONSTRAINT chk_players_nationality_format
+TO chk_card_subjects_nationality_format;
+
+ALTER TABLE card_subjects
+RENAME CONSTRAINT chk_players_prim_pos_format
+TO chk_card_subjects_prim_pos_format;
+
+ALTER TABLE card_subjects
+RENAME CONSTRAINT players_pkey
+TO card_subjects_pkey;
+
+
+-- for table subject_appearances
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT chk_player_jersey_number_range
+TO chk_subject_jersey_number_range;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT chk_player_order_range
+TO chk_subject_order_range;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT chk_trading_card_players_position_format
+TO chk_subject_appearances_position_format;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT trading_card_players_player_id_fkey
+TO subject_appearances_subject_id_fkey;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT trading_card_players_trading_card_id_fkey
+TO subject_appearances_trading_card_id_fkey;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT trading_card_players_pkey
+TO subject_appearances_pkey;
+
+ALTER TABLE subject_appearances
+RENAME CONSTRAINT uq_trading_card_player_order
+TO uq_subject_appearance_order;
+
+
+/*
+  Post-migration verification
+
+  Check the constraint inventory of card_subjects and
+  subject_appearances against the expected names and types.
+  Expected: 11 rows, all with status PASS.
+*/
+
+WITH expected (table_name, constraint_name, constraint_type) AS (
+  VALUES
+    ('card_subjects', 'card_subjects_pkey', 'p'),
+    ('card_subjects', 'chk_card_subjects_birth_year_range', 'c'),
+    ('card_subjects', 'chk_card_subjects_nationality_format', 'c'),
+    ('card_subjects', 'chk_card_subjects_prim_pos_format', 'c'),
+
+    ('subject_appearances', 'subject_appearances_pkey', 'p'),
+    ('subject_appearances', 'subject_appearances_subject_id_fkey', 'f'),
+    ('subject_appearances', 'subject_appearances_trading_card_id_fkey', 'f'),
+    ('subject_appearances', 'uq_subject_appearance_order', 'u'),
+    ('subject_appearances', 'chk_subject_order_range', 'c'),
+    ('subject_appearances', 'chk_subject_jersey_number_range', 'c'),
+    ('subject_appearances', 'chk_subject_appearances_position_format', 'c')
+),
+actual AS (
+  SELECT
+    t.relname::text AS table_name,
+    c.conname::text AS constraint_name,
+    c.contype::text AS constraint_type,
+    pg_get_constraintdef(c.oid) AS definition
+  FROM pg_constraint c
+  JOIN pg_class t ON t.oid = c.conrelid
+  JOIN pg_namespace n ON n.oid = t.relnamespace
+  WHERE n.nspname = 'public'
+    AND t.relname IN ('card_subjects', 'subject_appearances')
+)
+SELECT
+  COALESCE(e.table_name, a.table_name) AS table_name,
+  COALESCE(e.constraint_name, a.constraint_name) AS constraint_name,
+  CASE
+    WHEN e.constraint_name IS NULL THEN 'UNEXPECTED'
+    WHEN a.constraint_name IS NULL THEN 'MISSING'
+    WHEN e.constraint_type <> a.constraint_type THEN 'TYPE MISMATCH'
+    ELSE 'PASS'
+  END AS status,
+  a.definition
+FROM expected e
+FULL JOIN actual a
+  ON e.table_name = a.table_name
+  AND e.constraint_name = a.constraint_name
+ORDER BY table_name, constraint_name;
+
+/*
+  Index verification
+
+  Confirm the three supporting indexes have their expected
+  names and remain associated with the correct constraints.
+  Expected: 3 rows, all with status PASS.
+*/
+
+WITH expected (table_name, index_name, constraint_type) AS (
+  VALUES
+    ('card_subjects', 'card_subjects_pkey', 'p'),
+    ('subject_appearances', 'subject_appearances_pkey', 'p'),
+    ('subject_appearances', 'uq_subject_appearance_order', 'u')
+)
+SELECT
+  e.table_name,
+  e.index_name,
+  CASE
+    WHEN i.indexrelid IS NOT NULL
+      AND c.oid IS NOT NULL
+      AND c.conname = e.index_name
+      AND c.contype::text = e.constraint_type
+    THEN 'PASS'
+    ELSE 'FAIL'
+  END AS status,
+  pg_get_indexdef(i.indexrelid) AS definition
+FROM expected e
+LEFT JOIN pg_class idx
+  ON idx.oid = to_regclass(format('public.%I', e.index_name))
+LEFT JOIN pg_index i
+  ON i.indexrelid = idx.oid
+  AND i.indrelid = to_regclass(format('public.%I', e.table_name))
+LEFT JOIN pg_constraint c
+  ON c.conindid = i.indexrelid
+  AND c.conrelid = i.indrelid
+ORDER BY e.table_name, e.index_name;

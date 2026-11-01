@@ -129,16 +129,17 @@ CREATE TABLE trading_cards (
 );
 
 
--- create table players
+-- create table card_subjects
 CREATE TABLE card_subjects (
   id uuid PRIMARY KEY
     DEFAULT uuid_generate_v4(),
 
-  first_name text NOT NULL,               -- Player first name
-  last_name text NOT NULL,                -- Player last name, useful when searching
+  first_name text NOT NULL,               -- Subject first name
+  last_name text NOT NULL,                -- Subject last name, useful when searching
   nationality char(2),                    -- ISO-3166-1 alpha-2 (e.g. VE, US)
 
   birth_year integer 
+    CONSTRAINT chk_card_subjects_birth_year_range
     CHECK (
       birth_year IS NULL OR (             -- Enforcing time (year) range
         birth_year >=1850
@@ -148,15 +149,15 @@ CREATE TABLE card_subjects (
   notes text,                             -- Any other information
   primary_position text,                  -- Usual/career playing position
 
-  CONSTRAINT chk_players_nationality_format
+  CONSTRAINT chk_card_subjects_nationality_format
     CHECK (nationality IS NULL OR nationality ~ '^[A-Z]{2}$'),
 
-  CONSTRAINT chk_players_prim_pos_format
+  CONSTRAINT chk_card_subjects_prim_pos_format
     CHECK (primary_position IS NULL OR primary_position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
 );
 
 
--- create junction table trading_card_players
+-- create junction table subject_appearances
 CREATE TABLE subject_appearances (
   trading_card_id uuid
     REFERENCES trading_cards(item_id) ON DELETE CASCADE,
@@ -164,23 +165,23 @@ CREATE TABLE subject_appearances (
   subject_id uuid
     REFERENCES card_subjects(id) ON DELETE CASCADE,
 
-  subject_order smallint NOT NULL,       -- Position/order on the card (1–3)
+  subject_order smallint NOT NULL,      -- Position/order on the card (1–3)
   team_name text,                       -- Team shown for this player on this card
   jersey_number smallint,               -- Jersey number shown on this card
   position text,                        -- Card-specific playing position
 
   PRIMARY KEY (trading_card_id, subject_id),
 
-  CONSTRAINT uq_trading_card_player_order
+  CONSTRAINT uq_subject_appearance_order
     UNIQUE (trading_card_id, subject_order),
 
-  CONSTRAINT chk_player_order_range
+  CONSTRAINT chk_subject_order_range
     CHECK (subject_order BETWEEN 1 AND 3),
 
-  CONSTRAINT chk_player_jersey_number_range
+  CONSTRAINT chk_subject_jersey_number_range
     CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99),
 
-  CONSTRAINT chk_trading_card_players_position_format
+  CONSTRAINT chk_subject_appearances_position_format
     CHECK (position IS NULL OR position ~ '^[A-Z]{1,2}[A-Z]?$|^[1-3]B$')
 );
 
