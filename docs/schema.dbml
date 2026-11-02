@@ -88,6 +88,23 @@ Table trading_cards {
   print_run integer
   theme text
   notes text
+
+  // CHECK constraints:
+  // chk_trading_cards_dimensions_format
+  // chk_trading_cards_date_precision
+  // chk_trading_cards_front_orientation
+  // chk_trading_cards_back_orientation
+  // chk_trading_cards_print_run_positive
+  // chk_trading_cards_topps_now_start_date
+  // chk_trading_cards_availability_dates
+
+  // Autograph synchronization (migration 047):
+  // trg_sync_trading_card_autograph
+  // Updates items.is_autographed when autograph_type changes.
+
+  // Autograph validation (migration 047):
+  // trg_validate_item_autograph (defined on items)
+  // Rejects conflicting updates to items.is_autographed.
 }
 
 // Renamed from players in migration 043.
