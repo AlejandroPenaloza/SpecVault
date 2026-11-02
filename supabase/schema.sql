@@ -113,16 +113,36 @@ CREATE TABLE trading_cards (
   item_id uuid PRIMARY KEY
     REFERENCES items(id) ON DELETE CASCADE,
 
-  topic text NOT NULL,                            -- Sport, discipline, or other topic
-  brand text,                                     -- Topps, Panini, Upper Deck
-  set_name text,                                  -- Set or series name
-  serial_number text,                             -- Limited edition identifier -> specific copy and total production
-  year integer CHECK (year >= 1800),              -- Card issue year
-  card_number text,                               -- Alphanumeric
-  condition text,                                 -- NM, EX, PSA 9,...
-  is_autographed boolean NOT NULL DEFAULT false,  -- Whether marker autograph on card
+  title text,                                      -- Official card name or title
+  card_date date,                                  -- Date printed on card
+  card_date_precision text,                        -- Precision: year, month, day
+  card_number text,                                -- Alphanumeric identifier number in card
+  serial_number text,                              -- Individual printed numbered copy
   
-  dimensions text NOT NULL DEFAULT '2.5" x 3.5"', -- Card dimensions: width x height in " or mm
+  brand text,                                      -- Topps, Panini, Upper Deck
+  set_name text,                                   -- Set or series name
+  product_line text,                               -- Topps NOW, Prizm,...
+  card_family text,                                -- Base, Autograph, ...
+  subset text,                                     -- Named subset or insert grouping
+  parallel text,                                   -- Card variation
+  badges text[],                                   -- Printed and shown designation, badges, logos
+
+  sport_or_topic text NOT NULL,                    -- Sport or topic of the card
+  tournament text,                                 -- Tournament, league, competition; if applies
+
+  condition text,                                  -- NM, EX, PSA 9,...
+  dimensions text NOT NULL DEFAULT '2.5" x 3.5"',  -- Card dimensions: width x height including unit
+  front_orientation text,                          -- Portrait or landscape
+  back_orientation text,                           -- Portrait or landscape
+  is_wrapper_stored boolean NOT NULL DEFAULT false, 
+  
+  autograph_type text NOT NULL DEFAULT 'Not autographed',
+                                                   -- Type of autograph present in the card, if it is
+  product_type text,                               -- Whether print on demand
+  available_from_date date,                        -- Start of Topps NOW purchasing window
+  available_to_date date,                          -- End of Topps NOW purchasing window
+  print_run integer,                               -- Total number of copies produced, intended for Topps NOW
+  theme text,
   notes text,
 
   CONSTRAINT chk_trading_cards_dimensions_format

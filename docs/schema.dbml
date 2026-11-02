@@ -61,14 +61,32 @@ Table banknotes {
 
 Table trading_cards {
   item_id uuid [pk]
-  topic text
+
+  title text
+  card_date date
+  card_date_precision text
+  card_number text
+  serial_number text
   brand text
   set_name text
-  year integer
-  card_number text
+  product_line text
+  card_family text
+  subset text
+  parallel text
+  badges text[]
+  sport_or_topic text [not null]
+  tournament text
   condition text
-  is_autographed boolean
-  dimensions text
+  dimensions text [not null, default: '2.5" x 3.5"']
+  front_orientation text
+  back_orientation text
+  is_wrapper_stored boolean [not null, default: false]
+  autograph_type text [not null, default: 'Not autographed']
+  product_type text
+  available_from_date date
+  available_to_date date
+  print_run integer
+  theme text
   notes text
 }
 
