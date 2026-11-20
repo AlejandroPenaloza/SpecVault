@@ -17,10 +17,10 @@ flowchart TD
     F --> V["Update docs/schema.dbml"]
     V --> W["Export docs/schema_diagram.svg from dbdiagram.io"]
     W --> G["Update build_log.sql"]
-    G --> H["supabase db push --dry-run"]
+    G --> H["supabase db push --remote --dry-run"]
     H --> I{"Pending migrations correct?"}
     I -->|No| E
-    I -->|Yes| J["supabase db push"]
+    I -->|Yes| J["supabase db push --remote"]
     J --> K{"Deployment and remote verification successful?"}
     K -->|No| X["Investigate failure; prepare a corrective migration if needed"]
     X --> E
