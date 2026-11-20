@@ -4,22 +4,26 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 11/01/2026
+// Updated: 11/19/2026
 
 
 Table items {
   id uuid [pk]
-  name text
+  name text [not null]
   description text
   acquired_date date
   created_at timestamptz
   updated_at timestamptz
   subcollection text
-  theme text
+  // Personal organization across all collectible types; unlike trading_cards.theme,
+  // this is a user-defined array of categories, not a card-specific theme
+  theme "text[]" [not null, default: '{}']
   acquisition_cost numeric
   acquisition_currency char(3)
   acquisition_format text
   obtained_from text
+  // Collection-wide autograph indicator. For trading cards, this is derived from
+  // the authoritative trading_cards.autograph_type by synchronization triggers.
   is_autographed boolean [not null, default: false]
 }
 
@@ -61,10 +65,10 @@ Table banknotes {
 
 Table trading_cards {
   item_id uuid [pk]
-
   title text
   card_date date
   card_date_precision text
+  card_date_format text
   card_number text
   serial_number text
   brand text
@@ -73,41 +77,47 @@ Table trading_cards {
   card_family text
   subset text
   parallel text
-  badges text[]
+  badges "text[]"
   sport_or_topic text [not null]
   tournament text
   condition text
   dimensions text [not null, default: '2.5" x 3.5"']
+  thickness numeric [not null, default: 35, note: 'Thickness in points (pt)']
   front_orientation text
   back_orientation text
   is_wrapper_stored boolean [not null, default: false]
+
+  // Authoritative autograph classification for trading cards. The triggers
+  // synchronize items.is_autographed: 'Not autographed' and 'Facsimile' -> false;
+  // all other non-NULL classifications -> true.
   autograph_type text [not null, default: 'Not autographed']
+  relic_type text
   product_type text
   available_from_date date
   available_to_date date
   print_run integer
+
+  // Card-specific theme (design/product/subject), distinct from the personal,
+  // multi-valued organizational themes stored in items.theme.
   theme text
   notes text
 
   // CHECK constraints:
   // chk_trading_cards_dimensions_format
   // chk_trading_cards_date_precision
+  // chk_trading_cards_date_format
+  // chk_trading_cards_thickness_positive
   // chk_trading_cards_front_orientation
   // chk_trading_cards_back_orientation
   // chk_trading_cards_print_run_positive
   // chk_trading_cards_topps_now_start_date
   // chk_trading_cards_availability_dates
 
-  // Autograph synchronization (migration 047):
-  // trg_sync_trading_card_autograph
-  // Updates items.is_autographed when autograph_type changes.
-
-  // Autograph validation (migration 047):
-  // trg_validate_item_autograph (defined on items)
-  // Rejects conflicting updates to items.is_autographed.
+  // Trigger functions:
+  // sync_trading_card_autograph() via trg_sync_trading_card_autograph
+  // validate_item_autograph() via trg_validate_item_autograph (on items)
 }
 
-// Renamed from players in migration 043.
 Table card_subjects {
   id uuid [pk]
   first_name text [not null]
@@ -117,13 +127,12 @@ Table card_subjects {
   primary_position text
   notes text
 
-  // CHECK constraints (renamed in migration 044):
+  // CHECK constraints:
   // chk_card_subjects_birth_year_range
   // chk_card_subjects_nationality_format
   // chk_card_subjects_prim_pos_format
 }
 
-// Renamed from trading_card_players in migration 043.
 Table subject_appearances {
   trading_card_id uuid [not null]
   subject_id uuid [not null]
@@ -137,7 +146,7 @@ Table subject_appearances {
     (trading_card_id, subject_order) [unique, name: 'uq_subject_appearance_order']
   }
 
-  // CHECK constraints (renamed in migration 044):
+  // CHECK constraints:
   // chk_subject_order_range
   // chk_subject_jersey_number_range
   // chk_subject_appearances_position_format

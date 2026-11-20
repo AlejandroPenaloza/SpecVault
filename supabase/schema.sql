@@ -8,7 +8,7 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/10/23
+  Updated: 2026/11/19
 */
 
 
@@ -28,14 +28,17 @@ create table items (
   updated_at timestamptz NOT NULL DEFAULT now(),
 
   subcollection text,
-  theme text, 
+  -- personal, collection-wide classification of item
+  -- supports multiple user-defined themes and applies to every collectible type
+  -- (unlike trading_cards.theme)
+  theme text[] NOT NULL DEFAULT '{}', 
 
   acquisition_cost numeric(10,2) 
     CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0),
   acquisition_currency char(3) DEFAULT 'USD' 
     CHECK (acquisition_currency ~ '^[A-Z]{3}$'), 
-  acquisition_format text
-  obtained_from text
+  acquisition_format text,
+  obtained_from text,
 
   is_autographed boolean NOT NULL DEFAULT false
 );
@@ -114,8 +117,9 @@ CREATE TABLE trading_cards (
     REFERENCES items(id) ON DELETE CASCADE,
 
   title text,                                      -- Official card name or title
-  card_date date,                                  -- Date printed on card
+  card_date date,                                  -- Date normalized referring the printed date on card
   card_date_precision text,                        -- Precision: year, month, day
+  card_date_format text,                           -- Date format printed on card
   card_number text,                                -- Alphanumeric identifier number in card
   serial_number text,                              -- Individual printed numbered copy
   
@@ -132,12 +136,14 @@ CREATE TABLE trading_cards (
 
   condition text,                                  -- NM, EX, PSA 9,...
   dimensions text NOT NULL DEFAULT '2.5" x 3.5"',  -- Card dimensions: width x height including unit
+  thickness numeric NOT NULL DEFAULT 35,           -- Card thickness in points (pt)
   front_orientation text,                          -- Portrait or landscape
   back_orientation text,                           -- Portrait or landscape
   is_wrapper_stored boolean NOT NULL DEFAULT false, 
   
   autograph_type text NOT NULL DEFAULT 'Not autographed',
                                                    -- Type of autograph present in the card, if it is
+  relic_type text,                                 -- Relic material or object, e.g. Jersey, Bat, ...
   product_type text,                               -- Whether print on demand
   available_from_date date,                        -- Start of Topps NOW purchasing window
   available_to_date date,                          -- End of Topps NOW purchasing window
@@ -149,6 +155,10 @@ CREATE TABLE trading_cards (
   CHECK (
     dimensions ~ '^[0-9]+(\.[0-9]+)?(\"| mm) x [0-9]+(\.[0-9]+)?(\"| mm)$'
   ),
+
+  -- thickness is measured in points (pt) and must be positive
+  CONSTRAINT chk_trading_cards_thickness_positive
+  CHECK (thickness > 0),
 
   -- card date precision
   CONSTRAINT chk_trading_cards_date_precision
@@ -167,6 +177,36 @@ CREATE TABLE trading_cards (
           card_date_precision = 'year'
           AND EXTRACT(MONTH FROM card_date) = 1
           AND EXTRACT(DAY FROM card_date) = 1
+        )
+      )
+    )
+  ),
+
+  -- printed date format must agree with the recorded date precision
+  -- NULL indicates that the printed format has not been recorded
+  CONSTRAINT chk_trading_cards_date_format
+  CHECK (
+    card_date_format IS NULL
+    OR (
+      card_date_precision IS NOT NULL
+      AND (
+        (
+          card_date_precision = 'year'
+          AND card_date_format IN ('YYYY', 'YY')
+        )
+        OR (
+          card_date_precision = 'month'
+          AND card_date_format IN ('YYYY-MM', 'MM/YYYY', 'MM/YY')
+        )
+        OR (
+          card_date_precision = 'day'
+          AND card_date_format IN (
+            'YYYY-MM-DD',
+            'MM/DD/YYYY',
+            'MM/DD/YY',
+            'DD/MM/YYYY',
+            'DD/MM/YY'
+          )
         )
       )
     )
@@ -213,11 +253,14 @@ COMMENT ON CONSTRAINT chk_trading_cards_topps_now_start_date
 ON trading_cards
 IS 'Minimum purchasing-window start date: April 4, 2016, the launch of the original Topps NOW baseball program.';
 
-
 -- autograph synchronization function
--- trading_cards.autograph_type is authoritative for trading cards. 
--- Value 'Not autographed' maps to false; every other non-NULL value maps to true.
--- Locking the parent items row serializes competing changes to the autograph status of the same collectible
+
+-- for trading cards, trading_cards.autograph_type is authoritative.
+-- items.is_autographed is a derived, collection-wide boolean that
+-- summarizes whether the collectible has an authentic autograph.
+
+-- 'Not autographed' and 'Facsimile' map to FALSE, very other autograph_type value maps to TRUE.
+-- changes to autograph_type automatically synchronize items
 CREATE FUNCTION sync_trading_card_autograph()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -225,18 +268,20 @@ AS $$
 BEGIN
   UPDATE items
   SET is_autographed =
-    (NEW.autograph_type <> 'Not autographed')
+    (NEW.autograph_type NOT IN ('Not autographed', 'Facsimile'))
   WHERE id = NEW.item_id
     AND is_autographed IS DISTINCT FROM
-      (NEW.autograph_type <> 'Not autographed');
+      (NEW.autograph_type NOT IN ('Not autographed', 'Facsimile'));
 
   RETURN NEW;
 END;
 $$;
 
-
--- autograph validation function
--- reject direct changes to items.is_autographed contradicting trading card's autograph type
+-- for trading cards, items.is_autographed must agree with the
+-- authoritative trading_cards.autograph_type.
+--
+-- direct updates to items.is_autographed are rejected if they
+-- contradict the corresponding trading card's classification.
 CREATE FUNCTION validate_item_autograph()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -252,7 +297,7 @@ BEGIN
 
   IF FOUND AND
      NEW.is_autographed IS DISTINCT FROM
-       (v_autograph_type <> 'Not autographed')
+       (v_autograph_type NOT IN ('Not autographed', 'Facsimile'))
   THEN
     RAISE EXCEPTION
       'Autograph status conflicts with trading card for item %',
@@ -263,7 +308,6 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
 
 -- autograph triggers
 -- changes to the card classification synchronize the parent
