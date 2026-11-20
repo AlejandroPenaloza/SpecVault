@@ -136,7 +136,7 @@ Table card_subjects {
 Table subject_appearances {
   trading_card_id uuid [not null]
   subject_id uuid [not null]
-  subject_order smallint [not null]
+  subject_order smallint [not null, note: 'Subject position order in card (1-4)']
   team_name text
   jersey_number smallint
   position text

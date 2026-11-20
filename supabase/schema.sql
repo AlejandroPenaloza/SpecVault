@@ -372,7 +372,7 @@ CREATE TABLE subject_appearances (
     UNIQUE (trading_card_id, subject_order),
 
   CONSTRAINT chk_subject_order_range
-    CHECK (subject_order BETWEEN 1 AND 3),
+    CHECK (subject_order BETWEEN 1 AND 4),
 
   CONSTRAINT chk_subject_jersey_number_range
     CHECK (jersey_number IS NULL OR jersey_number BETWEEN 0 AND 99),

@@ -2036,3 +2036,14 @@ ALTER TABLE items
 -- Prevent NULL arrays; use {} for items without themes.
 ALTER TABLE items
   ALTER COLUMN theme SET NOT NULL;
+
+
+-- extend card subject appearance order in card for a maximum of 4.
+-- expands allowed subject order from 1–3 to 1–4
+-- existing smallint column and uniqueness constraint remain unchanged
+ALTER TABLE subject_appearances
+  DROP CONSTRAINT chk_subject_order_range;
+
+ALTER TABLE subject_appearances
+  ADD CONSTRAINT chk_subject_order_range
+  CHECK (subject_order BETWEEN 1 AND 4);
