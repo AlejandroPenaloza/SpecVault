@@ -12,8 +12,8 @@ Table items {
   name text [not null]
   description text
   acquired_date date
-  created_at timestamptz [not null]
-  updated_at timestamptz [not null]
+  created_at timestamptz [not null, default:`now()`]
+  updated_at timestamptz [not null, default:`now()`]
   subcollection text
   // Personal organization across all collectible types; unlike trading_cards.theme,
   // this is a user-defined array of categories, not a card-specific theme
@@ -25,6 +25,9 @@ Table items {
   // Collection-wide autograph indicator. For trading cards, this is derived from
   // the authoritative trading_cards.autograph_type by synchronization triggers.
   is_autographed boolean [not null, default: false]
+
+  // Trigger function:
+  // set_updated_at() via trg_items_set_updated_at
 }
 
 Table coins {
