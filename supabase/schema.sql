@@ -22,8 +22,8 @@ create table items (
   description text,
   acquired_date date,
 
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
+  created_at timestamptz NOT NULL DEFAULT now(),                                  -- record creation timestamp
+  updated_at timestamptz NOT NULL DEFAULT now(),                                  -- last row modification timestamp
 
   subcollection text,
   -- personal, collection-wide classification of item
@@ -46,6 +46,23 @@ create table items (
 -- index of subcollection in items
 CREATE INDEX idx_items_subcollection
 ON items(subcollection);
+
+-- Automatically maintain the modification timestamp of items.
+-- Refresh updated_at whenever an existing items row is updated.
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_items_set_updated_at
+BEFORE UPDATE ON public.items
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
 
 
 -- create table 'coins'

@@ -2119,3 +2119,35 @@ ALTER TABLE public.card_subjects
 
 ALTER TABLE public.taxa
   ALTER COLUMN id SET DEFAULT gen_random_uuid();
+
+
+-- Implement automatic maintenance of items.updated_at:
+
+-- The existing DEFAULT now() initializes the timestamp upon insertion
+-- but does not refresh it when an existing record is updated.
+-- Pre-migration testing confirmed that updated_at remained unchanged
+-- following an UPDATE operation.
+
+-- Introduce a reusable trigger function and a BEFORE UPDATE trigger
+-- to automatically refresh the modification timestamp.
+
+-- This implementation tracks modifications to the items row itself.
+-- Propagation of modifications from specialized collectible tables
+-- is deferred to a separate implementation.
+
+-- Automatically maintain the modification timestamp of items.
+-- Refresh updated_at whenever an existing items row is updated.
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_items_set_updated_at
+BEFORE UPDATE ON public.items
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
