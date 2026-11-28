@@ -166,11 +166,15 @@ CREATE TABLE trading_cards (
   CHECK (thickness > 0),
 
   -- card date precision
+  -- Require card_date and card_date_precision to be either both NULL
+  -- or both non-NULL, with the date consistent with its declared precision.
+  -- Explicit NULL checks prevent UNKNOWN from bypassing validation.
   CONSTRAINT chk_trading_cards_date_precision
   CHECK (
     (card_date IS NULL AND card_date_precision IS NULL)
     OR (
       card_date IS NOT NULL
+      AND card_date_precision IS NOT NULL
       AND card_date_precision IN ('year', 'month', 'day')
       AND (
         card_date_precision = 'day'
