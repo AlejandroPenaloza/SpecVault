@@ -2028,3 +2028,41 @@ ALTER TABLE subject_appearances
 ALTER TABLE subject_appearances
   ADD CONSTRAINT chk_subject_order_range
   CHECK (subject_order BETWEEN 1 AND 4);
+
+
+-- 2026-11-27:
+-- Standardize constraint names in distribution_areas
+ALTER TABLE public.distribution_areas
+  RENAME CONSTRAINT regions_pkey
+  TO distribution_areas_pkey;
+
+ALTER TABLE public.distribution_areas
+  RENAME CONSTRAINT regions_parent_code_fkey
+  TO distribution_areas_parent_code_fkey;
+
+
+-- Standardize constraint names in taxon_dist_areas
+ALTER TABLE public.taxon_dist_areas
+  RENAME CONSTRAINT taxon_regions_pkey
+  TO taxon_dist_areas_pkey;
+
+ALTER TABLE public.taxon_dist_areas
+  RENAME CONSTRAINT taxon_regions_taxon_id_fkey
+  TO taxon_dist_areas_taxon_id_fkey;
+
+ALTER TABLE public.taxon_dist_areas
+  RENAME CONSTRAINT taxon_regions_region_code_fkey
+  TO taxon_dist_areas_area_code_fkey;
+
+
+-- query to verify renaming
+SELECT
+  conrelid::regclass AS table_name,
+  conname AS constraint_name,
+  pg_get_constraintdef(oid) AS constraint_definition
+FROM pg_constraint
+WHERE conrelid IN (
+  'public.distribution_areas'::regclass,
+  'public.taxon_dist_areas'::regclass
+)
+ORDER BY table_name, constraint_name;

@@ -612,7 +612,7 @@ EXECUTE FUNCTION check_spec_taxon_rank();
 
 
 -- create table distribution_areas
--- hierarchical geographic distribution areas used of taxon occurrence
+-- hierarchical geographic distribution areas used for taxon occurrence
 CREATE TABLE distribution_areas (
   code text PRIMARY KEY,
   name text NOT NULL,
@@ -621,7 +621,7 @@ CREATE TABLE distribution_areas (
     REFERENCES distribution_areas(code)
     ON DELETE RESTRICT,
   notes text,
-  CONSTRAINT chk_dist_areas_area_type
+  CONSTRAINT chk_distribution_areas_area_type
     CHECK (
       area_type IN (
         'hemisphere',

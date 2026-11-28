@@ -4,7 +4,7 @@
 // Used to generate ER diagram
 // -----------------------------------
 // Created: 03/09/2026
-// Updated: 11/19/2026
+// Updated: 11/28/2026
 
 
 Table items {
@@ -12,8 +12,8 @@ Table items {
   name text [not null]
   description text
   acquired_date date
-  created_at timestamptz
-  updated_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
   subcollection text
   // Personal organization across all collectible types; unlike trading_cards.theme,
   // this is a user-defined array of categories, not a card-specific theme
@@ -166,7 +166,7 @@ Table stamps {
   printing_method text
   main_color text
   condition text
-  is_on_cover boolean
+  is_on_cover boolean [not null, default: false]
   catalog_system text
   catalog_number text
   notes text
@@ -174,8 +174,8 @@ Table stamps {
 
 Table taxa {
   id uuid [pk]
-  tax_name text
-  rank text
+  tax_name text [not null]
+  rank text [not null]
   parent_id uuid
   authority text
   common_name text
@@ -184,8 +184,8 @@ Table taxa {
 }
 
 Table specimens {
-  item_id uuid [pk, ref: > items.id]
-  taxon_id uuid [not null, unique, ref: > taxa.id]
+  item_id uuid [pk, ref: - items.id]
+  taxon_id uuid [not null, unique, ref: - taxa.id]
   sex text
   wingspan_mm numeric(5,2)
   dorsal_main_color text
@@ -198,8 +198,8 @@ Table specimens {
 
 Table distribution_areas {
   code text [pk]
-  name text
-  area_type text
+  name text [not null]
+  area_type text [not null]
   parent_code text
   notes text
 
@@ -209,7 +209,7 @@ Table distribution_areas {
 
 Table taxon_dist_areas {
   taxon_id uuid
-  area_code text
+  area_code text [not null]
   occurrence_status text
   notes text
   
@@ -224,10 +224,10 @@ Table taxon_dist_areas {
 
 // Relationships
 
-Ref: coins.item_id > items.id
-Ref: banknotes.item_id > items.id
-Ref: trading_cards.item_id > items.id
-Ref: stamps.item_id > items.id
+Ref: coins.item_id - items.id
+Ref: banknotes.item_id - items.id
+Ref: trading_cards.item_id - items.id
+Ref: stamps.item_id - items.id
 
 Ref: subject_appearances.trading_card_id > trading_cards.item_id
 Ref: subject_appearances.subject_id > card_subjects.id
