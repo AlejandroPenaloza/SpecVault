@@ -1857,31 +1857,12 @@ WHERE i.is_autographed IS DISTINCT FROM
 
 
 
--- 2026-11-19:
-/*
-  Project: SpecVault
-  Migration: 20261120023148_048_extend_trading_card_metadata_and_item_themes
-  Author: Alejandro Penaloza
-  Created: 2026/11/19
-
-  Purpose: 
-  To add trading_card columns:
-  
-  card_date_format: format in which the date appears on the card. 
-  Independent of card_date and card_date_precision.
-
-  relic_type: material embedded in the card, e.g. Jersey, Patch, Bat. 
-  NULL indicates no relic is recorded.
-
-  thickness: card thickness measured in points (pt). Default: 35 pt.
-
-  Include card_date validation with constraint chk_trading_cards_date_format
-  To treat facsimile signatures in trading cards as non-authentic autographs, and subsequent data update.
-  Include an update-autograph synchronization function to work between trading_cards.autogrpah_type and items.is_autographed.
-  To convert items.theme from text into text[].
-*/
-
-
+-- 2026-11-19: 
+-- To add trading_card columns: card_date_format, relic_type, thickness.
+-- Include card_date validation with constraint chk_trading_cards_date_format
+-- To treat facsimile signatures in trading cards as non-authentic autographs, and subsequent data update.
+-- Include an update-autograph synchronization function to work between trading_cards.autogrpah_type and items.is_autographed.
+-- To convert items.theme from text into text[].
 -- add columns card_date, relic_type, thickness
 ALTER TABLE trading_cards
   ADD COLUMN card_date_format text,

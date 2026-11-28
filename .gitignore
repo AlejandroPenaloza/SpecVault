@@ -11,8 +11,9 @@ build/
 .DS_Store
 Thumbs.db
 
-# Supabase local state
+# Supabase local state and generated artifacts
 supabase/.temp
+/supabase/schema_dump.sql
 
 # Python
 __pycache__/
