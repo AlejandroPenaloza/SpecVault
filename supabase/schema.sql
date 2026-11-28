@@ -12,9 +12,6 @@
 */
 
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
-WITH SCHEMA extensions;
-
 
 -- Create base table 'items'
 create table items (
@@ -339,7 +336,7 @@ EXECUTE FUNCTION validate_item_autograph();
 -- create table card_subjects
 CREATE TABLE card_subjects (
   id uuid PRIMARY KEY
-    DEFAULT extensions.uuid_generate_v4(),
+    DEFAULT gen_random_uuid(),
 
   first_name text NOT NULL,               -- Subject first name
   last_name text NOT NULL,                -- Subject last name, useful when searching
@@ -429,7 +426,7 @@ CREATE TABLE stamps (
 -- biological taxonomy hierarchy used to classify Lepidoptera specimens
 CREATE TABLE taxa (
   id uuid PRIMARY KEY
-    DEFAULT extensions.uuid_generate_v4(),
+    DEFAULT gen_random_uuid(),
 
   tax_name text NOT NULL,
   rank text NOT NULL,

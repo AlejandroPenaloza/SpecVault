@@ -2111,3 +2111,11 @@ ALTER TABLE public.trading_cards
     )
   );
   
+-- Standardize UUID generation using PostgreSQL's native gen_random_uuid() function.
+
+-- existing UUID values and foreign key relationships preserved
+ALTER TABLE public.card_subjects
+  ALTER COLUMN id SET DEFAULT gen_random_uuid();
+
+ALTER TABLE public.taxa
+  ALTER COLUMN id SET DEFAULT gen_random_uuid();
