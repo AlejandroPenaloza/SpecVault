@@ -8,17 +8,18 @@
   -------------------------
   Alejandro Penaloza
   Created: 2026/01/02
-  Updated: 2026/11/19
+  Updated: 2026/11/28
 */
 
 
-create extension if not exists "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+WITH SCHEMA extensions;
 
 
 -- Create base table 'items'
 create table items (
   -- Random generated id if not specified
-  id uuid primary key default uuid_generate_v4(),
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 
   name text not null,
   description text,
@@ -34,8 +35,10 @@ create table items (
   theme text[] NOT NULL DEFAULT '{}', 
 
   acquisition_cost numeric(10,2) 
+    CONSTRAINT acquisition_cost_non_negative
     CHECK (acquisition_cost IS NULL OR acquisition_cost >= 0),
   acquisition_currency char(3) DEFAULT 'USD' 
+    CONSTRAINT acquisition_currency_format
     CHECK (acquisition_currency ~ '^[A-Z]{3}$'), 
   acquisition_format text,
   obtained_from text,
@@ -63,8 +66,10 @@ CREATE TABLE coins (
   edge text,                            -- Reeded, plain, lettered
   finish text,                          -- Proof, business strike, etc.
   weight numeric(10,4)                  -- Grams
+    CONSTRAINT coins_weight_positive
     CHECK (weight IS NULL OR weight > 0),
   diameter numeric(10,2)                -- Millimeters
+    CONSTRAINT coins_diameter_positive
     CHECK (diameter IS NULL OR diameter > 0),
   mark text,                            -- Special marks or privy marks
   prog_theme text,                      -- Program/theme (e.g. State Quarters)
@@ -259,7 +264,9 @@ IS 'Minimum purchasing-window start date: April 4, 2016, the launch of the origi
 -- items.is_autographed is a derived, collection-wide boolean that
 -- summarizes whether the collectible has an authentic autograph.
 
--- 'Not autographed' and 'Facsimile' map to FALSE, very other autograph_type value maps to TRUE.
+-- 'Not autographed' and 'Facsimile' map to FALSE.
+-- Every other autograph_type value maps to TRUE.
+
 -- changes to autograph_type automatically synchronize items
 CREATE FUNCTION sync_trading_card_autograph()
 RETURNS trigger
@@ -328,7 +335,7 @@ EXECUTE FUNCTION validate_item_autograph();
 -- create table card_subjects
 CREATE TABLE card_subjects (
   id uuid PRIMARY KEY
-    DEFAULT uuid_generate_v4(),
+    DEFAULT extensions.uuid_generate_v4(),
 
   first_name text NOT NULL,               -- Subject first name
   last_name text NOT NULL,                -- Subject last name, useful when searching
@@ -361,7 +368,7 @@ CREATE TABLE subject_appearances (
   subject_id uuid
     REFERENCES card_subjects(id) ON DELETE CASCADE,
 
-  subject_order smallint NOT NULL,      -- Position/order on the card (1–3)
+  subject_order smallint NOT NULL,      -- Position/order on the card (1–4)
   team_name text,                       -- Team shown for this player on this card
   jersey_number smallint,               -- Jersey number shown on this card
   position text,                        -- Card-specific playing position
@@ -418,7 +425,7 @@ CREATE TABLE stamps (
 -- biological taxonomy hierarchy used to classify Lepidoptera specimens
 CREATE TABLE taxa (
   id uuid PRIMARY KEY
-    DEFAULT uuid_generate_v4(),
+    DEFAULT extensions.uuid_generate_v4(),
 
   tax_name text NOT NULL,
   rank text NOT NULL,
@@ -473,7 +480,7 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  -- all non-family ranks must have a parent
+  -- all non-superfamily ranks must have a parent
   IF NEW.parent_id IS NULL THEN
     RAISE EXCEPTION
       'Taxon with rank "%" must have a parent', NEW.rank;
